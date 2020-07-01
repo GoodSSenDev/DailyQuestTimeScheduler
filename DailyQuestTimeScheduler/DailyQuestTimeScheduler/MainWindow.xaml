@@ -3,10 +3,36 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:DailyQuestTimeScheduler"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" AllowsTransparency="True" WindowStyle="None" WindowStartupLocation="CenterScreen">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions >
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.85*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <materialDesign:ColorZone  Grid.ColumnSpan="3" Mode="PrimaryDark"  Padding="16" Height="65">
+            <StackPanel Orientation="Horizontal">
+                <ToggleButton Style="{DynamicResource MaterialDesignHamburgerToggleButton}" />
+                <TextBlock
+                  VerticalAlignment="Center"
+                  Margin="16 0 0 0">
+                Naviagation Bar
+                </TextBlock>
+            </StackPanel>
+            
+        </materialDesign:ColorZone>
+        <StackPanel Margin="0,65,525,0">
+
+        </StackPanel>
 
     </Grid>
+
+
 </Window>
