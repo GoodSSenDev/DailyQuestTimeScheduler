@@ -17,7 +17,7 @@
             <RowDefinition Height="0.15*"></RowDefinition>
             <RowDefinition Height="0.85*"></RowDefinition>
         </Grid.RowDefinitions>
-        <materialDesign:ColorZone  Grid.ColumnSpan="3" Mode="PrimaryDark"  Padding="16" Height="65">
+        <materialDesign:ColorZone Grid.Column ="0"  Grid.Row ="0"  Grid.ColumnSpan="3" Mode="PrimaryDark"  Padding="16" Height="65">
             <StackPanel Orientation="Horizontal">
                 <ToggleButton Style="{DynamicResource MaterialDesignHamburgerToggleButton}" />
                 <TextBlock
@@ -28,8 +28,12 @@
             </StackPanel>
             
         </materialDesign:ColorZone>
-        <StackPanel Margin="0,65,525,0">
+        <StackPanel Grid.Column ="0"  Grid.Row ="2">
+            <!--Bool Type Task List BOX -->
 
+                
+            
+        
         </StackPanel>
 
     </Grid>
