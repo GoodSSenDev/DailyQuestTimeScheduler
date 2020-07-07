@@ -30,7 +30,15 @@
         </materialDesign:ColorZone>
         <StackPanel Grid.Column ="0"  Grid.Row ="2">
             <!--Bool Type Task List BOX -->
+            <ListBox x:Name="BoolTypeTaskList" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Disabled" >
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
 
+            </ListBox>
                 
             
         
