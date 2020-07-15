@@ -25,8 +25,14 @@ namespace DailyQuestTimeScheduler
             }
         }
 
+        public BoolTypeUserTask(string title): base(title)
+        {
 
+        }
 
-        
+        public BoolTypeUserTask(string title, DateTime dateOfTask) : base(title, dateOfTask)
+        {
+
+        }
     }
 }

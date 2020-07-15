@@ -13,20 +13,24 @@ namespace DailyQuestTimeScheduler
     public abstract class UserTask
     {
         #region properties
-        DateTime Date { get; set; }
-        DateTime TimeOfCompletionUTC { get; set; }
-        DateTime TimeOfCompletionLocal { get; set; }
+        public string Title { get; set; }
+        public DateTime Date { get; set; }
+        public DateTime TimeOfCompletionUTC { get; set; }
+        public DateTime TimeOfCompletionLocal { get; set; }
         #endregion
 
-        public UserTask()
+
+        public UserTask(string titile = "NotSet")
         {
+            this.Title = titile;
             this.Date = DateTime.Now;
         }
-        public UserTask(DateTime dateOfTask)
+
+        public UserTask(string titile, DateTime dateOfTask)
         {
+            this.Title = titile;
             this.Date = dateOfTask;
         }
-
         
         public void SetCompletionTimeToNow()
         {
