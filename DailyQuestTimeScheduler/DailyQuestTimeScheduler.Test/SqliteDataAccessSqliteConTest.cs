@@ -10,12 +10,14 @@ using System.Globalization;
 /// </summary>
 namespace DailyQuestTimeScheduler.Tests
 {
-    public class SqliteDataAccessSqliteConTest
+    [Collection("Sequential")]
+    public class SqliteDataAccessSqliteConTest 
     {
         SqliteDataAccess databaseAccess;
         TaskHolder taskHolder;
 
-        //Setup abstraction of preparing Each test
+
+        //Setup resource
         public void SetUp()
         {
             databaseAccess = new SqliteDataAccessSqliteCon();
@@ -58,7 +60,6 @@ namespace DailyQuestTimeScheduler.Tests
             Assert.Equal(1, numOfRowInTaskHolderTable);
             Assert.Equal("Test", titleOfFirstRow);
             Assert.Equal(0b01010101, repeatPatternOfFirstRow);
-
         }
 
         /// <summary>
@@ -71,7 +72,7 @@ namespace DailyQuestTimeScheduler.Tests
         [InlineData("this is testi2ng", false, 0b00000001, 2, 323)]
         [InlineData("thi3s is testing", false, 0b01000101, 3, 213)]
         [InlineData("th4is is testing", true, 0b01010101, 4, 332)]
-        public async void UpdateTaskHolder_SettingShouldChanged(string description, bool isRepeat,
+        public async void UpdateTaskHolderAsync_SettingShouldChanged(string description, bool isRepeat,
             byte weeklyRepeatPattern, int taskDuration, int timeTakeToMakeTask)
         {
             var testTaskHolder = new NormalTaskHolder("Test", description, isRepeat, weeklyRepeatPattern,
@@ -87,7 +88,7 @@ namespace DailyQuestTimeScheduler.Tests
             if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
             {
                 await databaseAccessSqlite.CreateNewTaskHolderAsync(taskHolder);
-                await databaseAccessSqlite.UpdateTaskHolder(testTaskHolder);
+                await databaseAccessSqlite.UpdateTaskHolderAsync(testTaskHolder);
 
                 var list = await databaseAccessSqlite.GetTaskHolderListAsync();
                 descriptionOfFirstRow = list[0].Description;
@@ -111,8 +112,10 @@ namespace DailyQuestTimeScheduler.Tests
         /// but if getlist of bool type user task method not working this test will also not works
         /// </summary>
         [Fact]
-        public async void InsertUserTask_ShouldUpdatetheProperty()
+        public async void InsertUserTaskAsync_ShouldUpdatetheProperty()
         {
+            this.SetUp();
+            await TearDown(taskHolder.Title);
             this.SetUp();
             List<BoolTypeUserTask> boolTypeUserList = new List<BoolTypeUserTask>();
 
@@ -120,13 +123,13 @@ namespace DailyQuestTimeScheduler.Tests
             if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
             {
                 await databaseAccessSqlite.CreateNewTaskHolderAsync(taskHolder);
-                await databaseAccessSqlite.InsertUserTask(userTask);
+                await databaseAccessSqlite.InsertUserTaskAsync(userTask);
                 boolTypeUserList = await databaseAccessSqlite.GetBoolTypeUserListAsync(userTask.Title);
 
             }
             await TearDown(taskHolder.Title);
-            Assert.Equal(userTask.Date.ToString("G", CultureInfo.CreateSpecificCulture("es-ES"))
-                 , boolTypeUserList[0].Date.ToString("G", CultureInfo.CreateSpecificCulture("es-ES")));
+            Assert.Equal(userTask.Date
+                 , boolTypeUserList[0].Date);
 
         }
 
@@ -134,28 +137,35 @@ namespace DailyQuestTimeScheduler.Tests
         /// Check inserted data gpt Updated if the insertion test not working than this test also not works
         /// </summary>
         [Fact]
-        public async void UpdateUserTask_ShouldUpdatetheProperty()
+        public async void UpdateUserTaskAsync_ShouldUpdatetheProperty()
         {
             this.SetUp();
+            await TearDown(taskHolder.Title);
+            this.SetUp();
+            bool IsTaskDoneAftereChange = false;
+
             List<BoolTypeUserTask> boolTypeUserList = new List<BoolTypeUserTask>();
 
-            var dateTime = DateTime.ParseExact("01/10/2008 17:04:32", "G", CultureInfo.CreateSpecificCulture("es-ES"));
-
             var userTask = new BoolTypeUserTask(taskHolder.Title);
-            var secondUserTask = new BoolTypeUserTask(taskHolder.Title, dateTime);
+            userTask.IsTaskDone = false;
+            
+            var secondUserTask = new BoolTypeUserTask(taskHolder.Title);
+            secondUserTask.Date = userTask.Date;
+            secondUserTask.IsTaskDone = true;
+
             if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
             {
                 await databaseAccessSqlite.CreateNewTaskHolderAsync(taskHolder);
-                await databaseAccessSqlite.InsertUserTask(userTask);
-
+                await databaseAccessSqlite.InsertUserTaskAsync(userTask);
+                
+                await databaseAccessSqlite.UpdateUserTaskAsync(secondUserTask);
                 boolTypeUserList = await databaseAccessSqlite.GetBoolTypeUserListAsync(userTask.Title);
-                await databaseAccessSqlite.UpdateUserTask(secondUserTask);
-
+                IsTaskDoneAftereChange = boolTypeUserList[0].IsTaskDone;
             }
 
             await TearDown(taskHolder.Title);
             Assert.Single(boolTypeUserList);
-            Assert.Equal("01/10/2008 17:04:32", boolTypeUserList[0].Date.ToString("G", CultureInfo.CreateSpecificCulture("es-ES")));
+            Assert.True(IsTaskDoneAftereChange);
 
         }
     }

@@ -19,11 +19,11 @@ namespace DailyQuestTimeScheduler
 
         public abstract Task DeleteTaskHolderAsync(string title);
 
-        public abstract Task UpdateTaskHolder(TaskHolder taskHolder);
+        public abstract Task UpdateTaskHolderAsync(TaskHolder taskHolder);
 
-        public abstract Task UpdateUserTask(UserTask userTask);
+        public abstract Task UpdateUserTaskAsync(UserTask userTask);
 
-        public abstract Task InsertUserTask(UserTask userTask);
+        public abstract Task InsertUserTaskAsync(UserTask userTask);
 
 
     }

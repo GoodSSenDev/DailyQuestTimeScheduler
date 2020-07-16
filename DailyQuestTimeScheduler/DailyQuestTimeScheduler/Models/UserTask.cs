@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 /// <summary>
@@ -14,28 +15,69 @@ namespace DailyQuestTimeScheduler
     {
         #region properties
         public string Title { get; set; }
-        public DateTime Date { get; set; }
-        public DateTime TimeOfCompletionUTC { get; set; }
-        public DateTime TimeOfCompletionLocal { get; set; }
+
+        protected DateTime date;
+        public string Date
+        {
+            get
+            {
+                return date.ToString("G",
+                  CultureInfo.CreateSpecificCulture("es-ES"));
+            }
+            set
+            {
+                date = Convert.ToDateTime(value, CultureInfo.CreateSpecificCulture("es-ES"));
+            }
+        }
+
+        protected DateTime timeOfCompletionUTC;
+        public string TimeOfCompletionUTC
+        {
+            get { return timeOfCompletionUTC.ToString("G",
+                    CultureInfo.CreateSpecificCulture("es-ES")); }
+            set
+            {
+                timeOfCompletionUTC = Convert.ToDateTime(value, CultureInfo.CreateSpecificCulture("es-ES"));
+            }
+        }
+
+        protected DateTime timeOfCompletionLocal { get; set; }
+        public string TimeOfCompletionLocal
+        {
+            get
+            {
+                return timeOfCompletionLocal.ToString("G",
+                  CultureInfo.CreateSpecificCulture("es-ES"));
+            }
+            set
+            {
+                timeOfCompletionLocal = Convert.ToDateTime(value, CultureInfo.CreateSpecificCulture("es-ES"));
+            }
+        }
         #endregion
 
+        public UserTask()
+        {
+            this.Title = "NotSet";
+            this.date = DateTime.Now;
+        }
 
         public UserTask(string titile = "NotSet")
         {
             this.Title = titile;
-            this.Date = DateTime.Now;
+            this.date = DateTime.Now;
         }
 
         public UserTask(string titile, DateTime dateOfTask)
         {
             this.Title = titile;
-            this.Date = dateOfTask;
+            this.date = dateOfTask;
         }
         
         public void SetCompletionTimeToNow()
         {
-            TimeOfCompletionUTC = DateTime.UtcNow;
-            TimeOfCompletionLocal = DateTime.Now;
+            timeOfCompletionUTC = DateTime.UtcNow;
+            timeOfCompletionLocal = DateTime.Now;
         }
     }
 }
