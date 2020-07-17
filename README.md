@@ -7,5 +7,6 @@ Building stage
 
 # Build and Test
  
+https://dev.azure.com/GoodSSen/DailyQuestTimeScheduler/_apis/build/status/WPF%20Core%20Continuous%20Integration%20Build?branchName=master
 
 # Contribute
