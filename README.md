@@ -1,20 +1,14 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+This project is a task scheduling application like a daily check list with a data visualisation.
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+Data visualisation based on the users' check list might show the user a pattern so they can optimises their life patterns.
+
+Desktop : WPF Core
+
+Mobile : Xamarin Forms
 
 # Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+ 
+[![Build Status](https://dev.azure.com/GoodSSen/DailyQuestTimeScheduler/_apis/build/status/WPF%20Core%20Continuous%20Integration%20Build?branchName=master)](https://dev.azure.com/GoodSSen/DailyQuestTimeScheduler/_build/latest?definitionId=1&branchName=master)
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
