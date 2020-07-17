@@ -11,29 +11,33 @@ using System.Globalization;
 namespace DailyQuestTimeScheduler.Tests
 {
     [Collection("Sequential")]
-    public class SqliteDataAccessSqliteConTest 
+    public class SqliteDataAccessSqliteConTest : IAsyncLifetime
     {
         SqliteDataAccess databaseAccess;
         TaskHolder taskHolder;
 
-
-        //Setup resource
-        public void SetUp()
+        public SqliteDataAccessSqliteConTest()
         {
             databaseAccess = new SqliteDataAccessSqliteCon();
 
             taskHolder = new NormalTaskHolder("Test", "this is testing", true, 0b01010101, 1, 32);
         }
 
-        /// <summary>
-        /// This methold should remove every row in TaskHolder with title given and remove
-        /// For TearDown the test (resets the database).
-        /// </summary>
-        public async Task TearDown(string title)
+        //Create a testing row and a testing table
+        public async Task InitializeAsync()
         {
             if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
             {
-                await databaseAccessSqlite.DeleteTaskHolderAsync(title);
+                await databaseAccessSqlite.CreateNewTaskHolderAsync(taskHolder);
+            }
+        }
+        
+        //Delete the testing row and the testing table 
+        public async Task DisposeAsync()
+        {
+            if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
+            {
+                await databaseAccessSqlite.DeleteTaskHolderAsync(taskHolder.Title);
             }
         }
 
@@ -45,10 +49,9 @@ namespace DailyQuestTimeScheduler.Tests
             var numOfRowInTaskHolderTable = -1;
             string titleOfFirstRow = "";
             byte repeatPatternOfFirstRow = 0b010101;
-            this.SetUp();
+
             if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
             {
-                await databaseAccessSqlite.CreateNewTaskHolderAsync(taskHolder);
 
                 var list = await databaseAccessSqlite.GetTaskHolderListAsync();
                 numOfRowInTaskHolderTable = list.Count;
@@ -56,7 +59,6 @@ namespace DailyQuestTimeScheduler.Tests
                 repeatPatternOfFirstRow = list[0].WeeklyRepeatPattern;
             }
 
-            await TearDown(taskHolder.Title);
             Assert.Equal(1, numOfRowInTaskHolderTable);
             Assert.Equal("Test", titleOfFirstRow);
             Assert.Equal(0b01010101, repeatPatternOfFirstRow);
@@ -78,7 +80,7 @@ namespace DailyQuestTimeScheduler.Tests
             var testTaskHolder = new NormalTaskHolder("Test", description, isRepeat, weeklyRepeatPattern,
                 taskDuration, timeTakeToMakeTask);
 
-            this.SetUp();
+
             string descriptionOfFirstRow = "";
             byte repeatPatternOfFirstRow = 0b00000;
             bool isRepeatOfFirstRow = false;
@@ -87,7 +89,6 @@ namespace DailyQuestTimeScheduler.Tests
 
             if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
             {
-                await databaseAccessSqlite.CreateNewTaskHolderAsync(taskHolder);
                 await databaseAccessSqlite.UpdateTaskHolderAsync(testTaskHolder);
 
                 var list = await databaseAccessSqlite.GetTaskHolderListAsync();
@@ -98,7 +99,7 @@ namespace DailyQuestTimeScheduler.Tests
                 timeTakeToMakeTaskOfFirstRow = list[0].TimeTakeToMakeTask;
             }
 
-            await TearDown(taskHolder.Title);
+
 
             Assert.Equal(testTaskHolder.Description, descriptionOfFirstRow);
             Assert.Equal(testTaskHolder.WeeklyRepeatPattern, repeatPatternOfFirstRow);
@@ -114,20 +115,17 @@ namespace DailyQuestTimeScheduler.Tests
         [Fact]
         public async void InsertUserTaskAsync_ShouldUpdatetheProperty()
         {
-            this.SetUp();
-            await TearDown(taskHolder.Title);
-            this.SetUp();
+
             List<BoolTypeUserTask> boolTypeUserList = new List<BoolTypeUserTask>();
 
             var userTask = new BoolTypeUserTask(taskHolder.Title);
             if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
             {
-                await databaseAccessSqlite.CreateNewTaskHolderAsync(taskHolder);
                 await databaseAccessSqlite.InsertUserTaskAsync(userTask);
                 boolTypeUserList = await databaseAccessSqlite.GetBoolTypeUserListAsync(userTask.Title);
 
             }
-            await TearDown(taskHolder.Title);
+
             Assert.Equal(userTask.Date
                  , boolTypeUserList[0].Date);
 
@@ -139,9 +137,7 @@ namespace DailyQuestTimeScheduler.Tests
         [Fact]
         public async void UpdateUserTaskAsync_ShouldUpdatetheProperty()
         {
-            this.SetUp();
-            await TearDown(taskHolder.Title);
-            this.SetUp();
+
             bool IsTaskDoneAftereChange = false;
 
             List<BoolTypeUserTask> boolTypeUserList = new List<BoolTypeUserTask>();
@@ -155,7 +151,6 @@ namespace DailyQuestTimeScheduler.Tests
 
             if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
             {
-                await databaseAccessSqlite.CreateNewTaskHolderAsync(taskHolder);
                 await databaseAccessSqlite.InsertUserTaskAsync(userTask);
                 
                 await databaseAccessSqlite.UpdateUserTaskAsync(secondUserTask);
@@ -163,7 +158,6 @@ namespace DailyQuestTimeScheduler.Tests
                 IsTaskDoneAftereChange = boolTypeUserList[0].IsTaskDone;
             }
 
-            await TearDown(taskHolder.Title);
             Assert.Single(boolTypeUserList);
             Assert.True(IsTaskDoneAftereChange);
 
