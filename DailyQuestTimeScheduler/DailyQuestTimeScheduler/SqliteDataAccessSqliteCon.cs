@@ -27,8 +27,8 @@ namespace DailyQuestTimeScheduler
             {
 
                 await cnn.ExecuteAsync("INSERT INTO TaskHolder (Title, IsRepeat, WeeklyRepeatPattern," +
-                    " TaskDuration, TimeTakeToMakeTask, Description) VALUES (@Title, @IsRepeat, @WeeklyRepeatPattern, @TaskDuration, @TimeTakeToMakeTask," +
-                    " @Description)", taskHolder);
+                    " TaskDuration, TimeTakeToMakeTask, Description, InitTime) VALUES (@Title, @IsRepeat, @WeeklyRepeatPattern, @TaskDuration, @TimeTakeToMakeTask," +
+                    " @Description, @InitTime)", taskHolder);
             }
         }
 
@@ -71,7 +71,7 @@ namespace DailyQuestTimeScheduler
             }
         }
 
-        public override async Task UpdateTaskHolderAsync(TaskHolder taskHolder)// fix name Async
+        public override async Task UpdateTaskHolderAsync(TaskHolder taskHolder)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -92,7 +92,6 @@ namespace DailyQuestTimeScheduler
             }
         }
 
-
         public override async Task InsertUserTaskAsync(UserTask userTask)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -106,7 +105,6 @@ namespace DailyQuestTimeScheduler
                 }
             }
         }
-
 
         public override async Task UpdateUserTaskAsync(UserTask userTask)
         {
@@ -127,6 +125,28 @@ namespace DailyQuestTimeScheduler
         {
             //return configurationmanager.connectionstrings[id].connectionstring;
             return "Data Source=.\\TaskSaveData.db;Version=3;";
+        }
+
+        /// <summary>
+        /// Return
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="date"></param>
+        /// <returns>Return first Element that found in database table and return NULL if not found anything</returns>
+        public override async Task<BoolTypeUserTask> GetTaskOnCertainDateAsync(string title, string date)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                string[] splitDateString = date.Split(' ');
+                var output = await cnn.QueryAsync<BoolTypeUserTask>(@$"SELECT IsTaskDone, Date, TimeOfCompletionUTC,
+                    TimeOfCompletionLocal FROM {title} Where Date LIKE @Date",new { Date = splitDateString[0]+"%" });
+
+                var OutputList = output.ToList();
+
+                if (OutputList.Count == 0)
+                    return null;
+                else return OutputList[0];
+            }
         }
     }
 }

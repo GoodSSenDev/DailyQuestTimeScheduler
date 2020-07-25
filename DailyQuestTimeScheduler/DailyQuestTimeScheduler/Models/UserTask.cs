@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Text;
 
@@ -13,6 +14,7 @@ namespace DailyQuestTimeScheduler
 {
     public abstract class UserTask
     {
+
         #region properties
         public string Title { get; set; }
 
@@ -29,6 +31,10 @@ namespace DailyQuestTimeScheduler
                 date = Convert.ToDateTime(value, CultureInfo.CreateSpecificCulture("es-ES"));
             }
         }
+        public DateTime DateData
+        { 
+            get { return date; }
+        }
 
         protected DateTime timeOfCompletionUTC;
         public string TimeOfCompletionUTC
@@ -39,6 +45,10 @@ namespace DailyQuestTimeScheduler
             {
                 timeOfCompletionUTC = Convert.ToDateTime(value, CultureInfo.CreateSpecificCulture("es-ES"));
             }
+        }
+        public DateTime TimeOfCompletionUTCData
+        {
+            get { return timeOfCompletionUTC; }
         }
 
         protected DateTime timeOfCompletionLocal { get; set; }
@@ -53,6 +63,10 @@ namespace DailyQuestTimeScheduler
             {
                 timeOfCompletionLocal = Convert.ToDateTime(value, CultureInfo.CreateSpecificCulture("es-ES"));
             }
+        }
+        public DateTime TimeOfCompletionLocalData
+        {
+            get { return timeOfCompletionLocal; }
         }
         #endregion
 

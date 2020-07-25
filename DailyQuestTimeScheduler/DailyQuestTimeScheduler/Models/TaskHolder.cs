@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
@@ -14,7 +15,8 @@ namespace DailyQuestTimeScheduler
 {
     public abstract class TaskHolder
     {
-        public UserTask CurrentDayTask { get; set; }
+        public List<UserTask> CurrentTaskList { get; set; }
+
         //Title cannot change once it set
         private string title = null;
         public new string Title
@@ -39,9 +41,34 @@ namespace DailyQuestTimeScheduler
 
         public int TimeTakeToMakeTask { get; set; }
 
+        protected DateTime initTime;
+
+        public string InitTime
+        {
+            get
+            {
+                return initTime.ToString("G", CultureInfo.CreateSpecificCulture("es-ES"));
+            }
+            set
+            {
+                initTime = Convert.ToDateTime(value, CultureInfo.CreateSpecificCulture("es-ES"));
+            }
+        }
+
+        public DateTime InitTimeData
+        {
+            get { return initTime; }
+        }
+
+        //For DataBase (Default constructor)
         public TaskHolder()
         {
 
+        }
+
+        public TaskHolder(DateTime initTime)
+        {
+            this.initTime = initTime;
         }
 
 

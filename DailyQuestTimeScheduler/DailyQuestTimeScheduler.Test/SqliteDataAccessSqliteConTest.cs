@@ -20,7 +20,7 @@ namespace DailyQuestTimeScheduler.Tests
         {
             databaseAccess = new SqliteDataAccessSqliteCon();
 
-            taskHolder = new NormalTaskHolder("Test", "this is testing", true, 0b01010101, 1, 32);
+            taskHolder = new NormalTaskHolder("Test", "this is testing", true, 0b01010101, 1, 32, DateTime.Now);
         }
 
         //Create a testing row and a testing table
@@ -28,6 +28,7 @@ namespace DailyQuestTimeScheduler.Tests
         {
             if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
             {
+                await databaseAccessSqlite.DeleteTaskHolderAsync(taskHolder.Title);
                 await databaseAccessSqlite.CreateNewTaskHolderAsync(taskHolder);
             }
         }
@@ -78,7 +79,7 @@ namespace DailyQuestTimeScheduler.Tests
             byte weeklyRepeatPattern, int taskDuration, int timeTakeToMakeTask)
         {
             var testTaskHolder = new NormalTaskHolder("Test", description, isRepeat, weeklyRepeatPattern,
-                taskDuration, timeTakeToMakeTask);
+                taskDuration, timeTakeToMakeTask, DateTime.Now);
 
 
             string descriptionOfFirstRow = "";
@@ -98,8 +99,6 @@ namespace DailyQuestTimeScheduler.Tests
                 taskdurationOfFirstRow = list[0].TaskDuration;
                 timeTakeToMakeTaskOfFirstRow = list[0].TimeTakeToMakeTask;
             }
-
-
 
             Assert.Equal(testTaskHolder.Description, descriptionOfFirstRow);
             Assert.Equal(testTaskHolder.WeeklyRepeatPattern, repeatPatternOfFirstRow);
@@ -161,6 +160,29 @@ namespace DailyQuestTimeScheduler.Tests
             Assert.Single(boolTypeUserList);
             Assert.True(IsTaskDoneAftereChange);
 
+        }
+        /// <summary>
+        /// Check GetTaskOnCertainDate Return a task if correct date was inserted
+        /// </summary>
+        [Fact]
+        public async void GetTaskOnCertainDate_ShouldReturnATask()
+        {
+
+            var userTask = new BoolTypeUserTask(taskHolder.Title);
+            userTask.IsTaskDone = true;
+
+            BoolTypeUserTask retrunUserTask = new BoolTypeUserTask(taskHolder.Title);
+
+            if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
+            {
+                await databaseAccessSqlite.InsertUserTaskAsync(userTask);
+
+                retrunUserTask = await databaseAccessSqlite.GetTaskOnCertainDateAsync("Test", DateTime.Now.ToString("G",
+                    CultureInfo.CreateSpecificCulture("es-ES")));
+            }
+                
+            Assert.Equal(userTask.IsTaskDone ,retrunUserTask.IsTaskDone);
+            Assert.Equal(userTask.Date, retrunUserTask.Date);
         }
     }
 } 
