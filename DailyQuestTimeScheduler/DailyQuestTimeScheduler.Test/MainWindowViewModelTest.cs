@@ -50,7 +50,7 @@ namespace DailyQuestTimeScheduler.Tests
 
             var dBAccessClass = new Mock<SqliteDataAccess>();
 
-            dBAccessClass.Setup(x => x.GetTaskOnCertainDateAsync(It.IsAny<string>(), It.IsAny<string>()))
+            dBAccessClass.Setup(x => x.GetTaskOnSpecificDateAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new BoolTypeUserTask() { IsTaskDone = true });
 
             this.mainWindowVM = new MainWindowViewModel(dBAccessClass.Object);
@@ -73,10 +73,10 @@ namespace DailyQuestTimeScheduler.Tests
 
             if ((Test1WeekPattern & Today) == Today)
             {
-                Assert.Single(mainWindowVM.TaskHolderList[1].CurrentTaskList);
+                Assert.Single(mainWindowVM.TaskHolderList[0].CurrentTaskList);
             }
             else
-                Assert.Single(mainWindowVM.TaskHolderList[0].CurrentTaskList);
+                Assert.Single(mainWindowVM.TaskHolderList[1].CurrentTaskList);
 
         }
     }

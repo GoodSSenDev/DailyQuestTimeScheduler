@@ -11,4 +11,4 @@ Mobile : Xamarin Forms
  
 [![Build Status](https://dev.azure.com/GoodSSen/DailyQuestTimeScheduler/_apis/build/status/WPF%20Core%20Continuous%20Integration%20Build?branchName=master)](https://dev.azure.com/GoodSSen/DailyQuestTimeScheduler/_build/latest?definitionId=1&branchName=master)
 
-
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)

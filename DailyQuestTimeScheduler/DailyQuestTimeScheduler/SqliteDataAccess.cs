@@ -25,6 +25,8 @@ namespace DailyQuestTimeScheduler
 
         public abstract Task InsertUserTaskAsync(UserTask userTask);
 
-        public abstract Task<BoolTypeUserTask> GetTaskOnCertainDateAsync(string title, string date);
+        public abstract Task UpsertUserTaskAsync(UserTask userTask);
+
+        public abstract Task<BoolTypeUserTask> GetTaskOnSpecificDateAsync(string title, string date);
     }
 }

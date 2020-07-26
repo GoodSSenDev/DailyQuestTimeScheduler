@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -51,12 +52,13 @@ namespace DailyQuestTimeScheduler.ViewModels
 
                 for (int i = 1; i < checkUntilday; i++)
                 {
-                    var checkingDay = (0b00000001 << (today - i % 7));
+                    //For mod of negative number i mode 2 times 
+                    var checkingDay = ((int)0b00000001 << ((today - i) % 7 + 7) % 7);
                      
                     if ((taskHolder.WeeklyRepeatPattern & checkingDay) == checkingDay)
                     {
                         var dateTimeAtThatTime = DateTime.Now + TimeSpan.FromDays(-i);
-                        var boolTypeTask = await DBAccess.GetTaskOnCertainDateAsync(taskHolder.Title, dateTimeAtThatTime.ToString("G",
+                        var boolTypeTask = await DBAccess.GetTaskOnSpecificDateAsync(taskHolder.Title, dateTimeAtThatTime.ToString("G",
                             CultureInfo.CreateSpecificCulture("es-ES")));
 
                         if (boolTypeTask == null)
@@ -71,10 +73,70 @@ namespace DailyQuestTimeScheduler.ViewModels
                 }
                 
             }
+        }
+
+        /// <summary>
+        /// 
+        /// Check the DB and if the task not exist for today then  Assign new Task To Task List
+        /// </summary>
+        /// <returns></returns>
+        public async Task AssignTodaysTaskAsync()
+        {
+            if (TaskHolderList.Count == 0)
+                return;
+
+            var today = (int)DateTime.Now.DayOfWeek;
+
+            foreach (var taskHolder in TaskHolderList)
+            {
+                var checkingDay = (0b00000001 << (today));
+
+                if ((taskHolder.WeeklyRepeatPattern & checkingDay) == checkingDay)
+                {
+                    var boolTypeTask = await DBAccess.GetTaskOnSpecificDateAsync(taskHolder.Title, DateTime.Now.ToString("G",
+                        CultureInfo.CreateSpecificCulture("es-ES")));
+
+                    if (boolTypeTask == null)
+                        boolTypeTask = new BoolTypeUserTask(taskHolder.Title);
+                    else
+                        boolTypeTask.Title = taskHolder.Title;
+
+                    taskHolder.CurrentTaskList.Add(boolTypeTask);
+
+                    BoolTypeTaskList.Add(boolTypeTask);
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Upsert Every Tasks In TaskHolder .
+        /// </summary>
+        /// <returns></returns>
+        public async Task UpdateAllTasksAsync()
+        {
+            if (TaskHolderList.Count == 0)
+                return;
+
+            foreach(var taskHolder in TaskHolderList)
+            {
+                for(int i = 0; i< taskHolder.CurrentTaskList.Count; i++)
+                {
+                    await DBAccess.UpsertUserTaskAsync(taskHolder.CurrentTaskList[i]);
+                }
+            }
 
         }
 
-        // update the task that is checked using command 
+        /// <summary>
+        /// Just Upsert The userTask (insert and if same date exist then Update on that row) 
+        /// </summary>
+        /// <param name="userTask"></param>
+        /// <returns></returns>
+        public async Task UpdateTaskAsync(BoolTypeUserTask userTask)
+        {
+            await DBAccess.UpsertUserTaskAsync(userTask);
+        }
 
     }
 }

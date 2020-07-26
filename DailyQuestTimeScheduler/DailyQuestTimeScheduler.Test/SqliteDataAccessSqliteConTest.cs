@@ -112,7 +112,7 @@ namespace DailyQuestTimeScheduler.Tests
         /// but if getlist of bool type user task method not working this test will also not works
         /// </summary>
         [Fact]
-        public async void InsertUserTaskAsync_ShouldUpdatetheProperty()
+        public async void InsertUserTaskAsync_ShouldInsertTheProperty()
         {
 
             List<BoolTypeUserTask> boolTypeUserList = new List<BoolTypeUserTask>();
@@ -131,10 +131,10 @@ namespace DailyQuestTimeScheduler.Tests
         }
 
         /// <summary>
-        /// Check inserted data gpt Updated if the insertion test not working than this test also not works
+        /// Check inserted data get to  Updated, but if the insertion test not working then this test also not works
         /// </summary>
         [Fact]
-        public async void UpdateUserTaskAsync_ShouldUpdatetheProperty()
+        public async void UpdateUserTaskAsync_ShouldUpdateTheProperty()
         {
 
             bool IsTaskDoneAftereChange = false;
@@ -159,7 +159,6 @@ namespace DailyQuestTimeScheduler.Tests
 
             Assert.Single(boolTypeUserList);
             Assert.True(IsTaskDoneAftereChange);
-
         }
         /// <summary>
         /// Check GetTaskOnCertainDate Return a task if correct date was inserted
@@ -177,12 +176,68 @@ namespace DailyQuestTimeScheduler.Tests
             {
                 await databaseAccessSqlite.InsertUserTaskAsync(userTask);
 
-                retrunUserTask = await databaseAccessSqlite.GetTaskOnCertainDateAsync("Test", DateTime.Now.ToString("G",
+                retrunUserTask = await databaseAccessSqlite.GetTaskOnSpecificDateAsync("Test", DateTime.Now.ToString("G",
                     CultureInfo.CreateSpecificCulture("es-ES")));
             }
                 
             Assert.Equal(userTask.IsTaskDone ,retrunUserTask.IsTaskDone);
             Assert.Equal(userTask.Date, retrunUserTask.Date);
         }
+
+        /// <summary>
+        /// This Test will Tesk Insertion of Upsert method.
+        /// but if getlist of bool type user task method not working this test will also not works
+        /// </summary>
+        [Fact]
+        public async void UpsertUserTaskAsync_ShouldInsertTheProperty()
+        {
+
+            List<BoolTypeUserTask> boolTypeUserList = new List<BoolTypeUserTask>();
+
+            var userTask = new BoolTypeUserTask(taskHolder.Title);
+            if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
+            {
+                await databaseAccessSqlite.UpsertUserTaskAsync(userTask);
+                boolTypeUserList = await databaseAccessSqlite.GetBoolTypeUserListAsync(userTask.Title);
+
+            }
+
+            Assert.Equal(userTask.Date
+                 , boolTypeUserList[0].Date);
+
+        }
+
+        /// <summary>
+        /// Check inserted data get to updated, but if the insertion test not working then this test also not works
+        /// </summary>
+        [Fact]
+        public async void UpsertUserTaskAsync_ShouldUpdatetheProperty()
+        {
+
+            bool IsTaskDoneAftereChange = false;
+
+            List<BoolTypeUserTask> boolTypeUserList = new List<BoolTypeUserTask>();
+
+            var userTask = new BoolTypeUserTask(taskHolder.Title);
+            userTask.IsTaskDone = false;
+
+            var secondUserTask = new BoolTypeUserTask(taskHolder.Title);
+            secondUserTask.Date = userTask.Date;
+            secondUserTask.IsTaskDone = true;
+
+            if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
+            {
+                await databaseAccessSqlite.InsertUserTaskAsync(userTask);
+
+                await databaseAccessSqlite.UpsertUserTaskAsync(secondUserTask);
+                boolTypeUserList = await databaseAccessSqlite.GetBoolTypeUserListAsync(userTask.Title);
+                IsTaskDoneAftereChange = boolTypeUserList[0].IsTaskDone;
+            }
+
+            Assert.Single(boolTypeUserList);
+            Assert.True(IsTaskDoneAftereChange);
+        }
     }
+
+
 } 

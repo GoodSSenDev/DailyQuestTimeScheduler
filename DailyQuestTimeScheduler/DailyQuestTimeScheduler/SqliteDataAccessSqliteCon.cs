@@ -36,7 +36,7 @@ namespace DailyQuestTimeScheduler
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                await cnn.ExecuteAsync(@$"CREATE TABLE {taskHolder.Title} (Id INTEGER NOT NULL UNIQUE, IsTaskDone INTEGER, Date TEXT NOT NULL" +
+                await cnn.ExecuteAsync(@$"CREATE TABLE {taskHolder.Title} (Id INTEGER NOT NULL UNIQUE, IsTaskDone INTEGER, Date TEXT NOT NULL UNIQUE" +
                     $", TimeOfCompletionUTC TEXT, TimeOfCompletionLocal TEXT, PRIMARY KEY(Id AUTOINCREMENT))");
             }
         }
@@ -115,8 +115,25 @@ namespace DailyQuestTimeScheduler
                     await cnn.ExecuteAsync(@$"UPDATE {boolUserTask.Title}
                     SET IsTaskDone = @IsTaskDone, TimeOfCompletionUTC = @TimeOfCompletionUTC, 
                         TimeOfCompletionLocal = @TimeOfCompletionLocal
-                    WHERE Date = @Date;"// need to fix this 
+                    WHERE Date = @Date;" 
                     , userTask);
+                }
+            }
+        }
+
+        public override async Task UpsertUserTaskAsync(UserTask userTask)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                if (userTask is BoolTypeUserTask boolUserTask)
+                {
+                    await cnn.ExecuteAsync(@$"INSERT INTO {boolUserTask.Title} (IsTaskDone, Date," +
+                        " TimeOfCompletionUTC, TimeOfCompletionLocal) VALUES (" +
+                        "@IsTaskDone, @Date, @TimeOfCompletionUTC, @TimeOfCompletionLocal)" +
+                        "ON CONFLICT(Date) DO UPDATE SET " +
+                        "IsTaskDone = @IsTaskDone, TimeOfCompletionUTC = @TimeOfCompletionUTC," +
+                        " TimeOfCompletionLocal = @TimeOfCompletionLocal " +
+                        "WHERE Date = @Date", userTask);
                 }
             }
         }
@@ -128,12 +145,12 @@ namespace DailyQuestTimeScheduler
         }
 
         /// <summary>
-        /// Return
+        /// Method that allows find userTask on specific date.
         /// </summary>
         /// <param name="title"></param>
         /// <param name="date"></param>
         /// <returns>Return first Element that found in database table and return NULL if not found anything</returns>
-        public override async Task<BoolTypeUserTask> GetTaskOnCertainDateAsync(string title, string date)
+        public override async Task<BoolTypeUserTask> GetTaskOnSpecificDateAsync(string title, string date)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
