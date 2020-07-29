@@ -36,6 +36,8 @@ namespace DailyQuestTimeScheduler.ViewModels
             return TaskHolderList = await DBAccess.GetTaskHolderListAsync();
         }
 
+        #region DBAccess Class
+
         public async Task BringUnfinishedTasks()
         {
             if (TaskHolderList.Count == 0)
@@ -137,6 +139,9 @@ namespace DailyQuestTimeScheduler.ViewModels
         {
             await DBAccess.UpsertUserTaskAsync(userTask);
         }
+        #endregion
+
+
 
     }
 }
