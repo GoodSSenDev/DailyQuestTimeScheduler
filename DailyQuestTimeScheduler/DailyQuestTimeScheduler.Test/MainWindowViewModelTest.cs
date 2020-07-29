@@ -73,10 +73,10 @@ namespace DailyQuestTimeScheduler.Tests
 
             if ((Test1WeekPattern & Today) == Today)
             {
-                Assert.Single(mainWindowVM.TaskHolderList[0].CurrentTaskList);
+                Assert.Single(mainWindowVM.TaskHolderList[1].CurrentTaskList);
             }
             else
-                Assert.Single(mainWindowVM.TaskHolderList[1].CurrentTaskList);
+                Assert.Single(mainWindowVM.TaskHolderList[0].CurrentTaskList);
 
         }
     }

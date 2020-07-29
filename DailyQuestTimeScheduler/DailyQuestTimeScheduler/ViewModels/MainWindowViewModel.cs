@@ -65,8 +65,6 @@ namespace DailyQuestTimeScheduler.ViewModels
 
                         if (boolTypeTask == null)
                             boolTypeTask = new BoolTypeUserTask(taskHolder.Title, dateTimeAtThatTime);
-                        else
-                            boolTypeTask.Title = taskHolder.Title;
 
                         taskHolder.CurrentTaskList.Add(boolTypeTask);
 
