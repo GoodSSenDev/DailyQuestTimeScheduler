@@ -2,15 +2,22 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Printing;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace DailyQuestTimeScheduler.ViewModels
 {
     public class MainWindowViewModel
     {
+        public bool IsReseting { get; set; } = false;
+
+        public ICommand ResetAllTaskListAsyncCommand { get; set; }
+
+
         public SqliteDataAccess DBAccess { get; set; }
 
         private ObservableCollection<BoolTypeUserTask> boolTypeTaskList = new ObservableCollection<BoolTypeUserTask>();
@@ -21,9 +28,13 @@ namespace DailyQuestTimeScheduler.ViewModels
 
         public List<NormalTaskHolder> TaskHolderList { get; set; }
 
+        #region Constructor
+
         public MainWindowViewModel()
         {
             this.DBAccess = new SqliteDataAccessSqliteCon();
+
+            ResetAllTaskListAsyncCommand = new AsyncCommand(ResetAllTaskListAsync, CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
         }
 
         public MainWindowViewModel(SqliteDataAccess dBAccess)
@@ -31,14 +42,62 @@ namespace DailyQuestTimeScheduler.ViewModels
             this.DBAccess = dBAccess;
         }
 
+        #endregion
+
+
+        #region Action
+
+        public async Task ResetAllTaskListAsync()
+        {
+            try
+            {
+                IsReseting = true;
+
+                await this.UpdateAllTaskListAsync();
+                await ResetBoolTypeTaskListAsync();
+                await this.UpdateAllTaskListAsync();
+            }
+            finally
+            {
+                IsReseting = false;
+            }
+        }
+
+        public bool CanExcuteResetAllTaskList()
+        {
+            return !(IsReseting);
+        }
+
         public async Task<List<NormalTaskHolder>> GetTaskHolderListAsync()
         {
             return TaskHolderList = await DBAccess.GetTaskHolderListAsync();
         }
 
-        #region DBAccess Class
+        /// <summary>
+        /// Reset All Task List 
+        /// This usally happen when a day changes and an initial Step of the application.
+        /// </summary>
+        /// <returns></returns>
+        private async Task ResetBoolTypeTaskListAsync()
+        {
+            TaskHolderList.Clear();
+            boolTypeTaskList.Clear();
 
-        public async Task BringUnfinishedTasks()
+            await this.BringUnfinishedBoolTypeTasksAsync();
+            await this.AssignTodaysBoolTaskAsync();
+        }
+
+
+        #endregion
+
+        #region Fundamental DBAccess Class
+
+        public async Task AssignNewTaskHolder(NormalTaskHolder taskHolder)
+        {
+            await DBAccess.CreateNewTaskHolderAsync(taskHolder);
+        }
+
+        public async Task BringUnfinishedBoolTypeTasksAsync()
         {
             if (TaskHolderList.Count == 0)
                 return;
@@ -80,7 +139,7 @@ namespace DailyQuestTimeScheduler.ViewModels
         /// Check the DB and if the task not exist for today then  Assign new Task To Task List
         /// </summary>
         /// <returns></returns>
-        public async Task AssignTodaysTaskAsync()
+        public async Task AssignTodaysBoolTaskAsync()
         {
             if (TaskHolderList.Count == 0)
                 return;
@@ -113,7 +172,7 @@ namespace DailyQuestTimeScheduler.ViewModels
         /// Upsert Every Tasks In TaskHolder .
         /// </summary>
         /// <returns></returns>
-        public async Task UpdateAllTasksAsync()
+        public async Task UpdateAllTaskListAsync()
         {
             if (TaskHolderList.Count == 0)
                 return;

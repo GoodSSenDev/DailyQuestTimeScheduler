@@ -61,7 +61,7 @@ namespace DailyQuestTimeScheduler.Tests
                new NormalTaskHolder("Test2", "this is testing2", true, 0b00101010, 2, 3214,DateTime.Now + TimeSpan.FromDays(-10))
             };
 
-            await mainWindowVM.BringUnfinishedTasks();
+            await mainWindowVM.BringUnfinishedBoolTypeTasksAsync();
 
             ////Since enum of Sunday from DayOfWeek property is 0 which, I want it to be highest number
             ////So I made Monday 1 to 0 and sunday as 0 to 6 
