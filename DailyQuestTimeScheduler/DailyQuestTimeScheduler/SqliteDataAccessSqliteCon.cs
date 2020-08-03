@@ -16,13 +16,11 @@ namespace DailyQuestTimeScheduler
 
         public override async Task CreateNewTaskHolderAsync(TaskHolder taskHolder)
         {
-            //for now just bool type userTask only so no need to do other thing. // pattern matching required.
             await Task.WhenAll(new List<Task>() { CreateTaskHolderRowAsync(taskHolder), CreateBoolTypeUserTaskTableAsync(taskHolder)});
         }
 
         private async Task CreateTaskHolderRowAsync(TaskHolder taskHolder)
         {
-
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
 

@@ -22,6 +22,8 @@ namespace DailyQuestTimeScheduler
                 {
                     this.SetCompletionTimeToNow();
                 }
+                OnPropertyChanged();
+                ActionOnDataChanged();
             }
         }
         public BoolTypeUserTask() : base()

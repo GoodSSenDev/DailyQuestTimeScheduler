@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Dynamic;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
@@ -13,7 +15,7 @@ using System.Threading.Tasks.Sources;
 /// </summary>
 namespace DailyQuestTimeScheduler
 {
-    public abstract class TaskHolder
+    public abstract class TaskHolder 
     {
         public List<UserTask> CurrentTaskList { get; set; }
 
@@ -63,12 +65,13 @@ namespace DailyQuestTimeScheduler
         //For DataBase (Default constructor)
         public TaskHolder()
         {
-
+            this.CurrentTaskList = new List<UserTask>();
         }
 
         public TaskHolder(DateTime initTime)
         {
             this.initTime = initTime;
+            this.CurrentTaskList = new List<UserTask>();
         }
 
 

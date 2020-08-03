@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 /// <summary>
@@ -12,11 +14,13 @@ using System.Text;
 
 namespace DailyQuestTimeScheduler
 {
-    public abstract class UserTask
+    public abstract class UserTask : INotifyPropertyChanged
     {
 
         #region properties
         public string Title { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         protected DateTime date;
         public string Date
@@ -51,6 +55,7 @@ namespace DailyQuestTimeScheduler
             get { return timeOfCompletionUTC; }
         }
 
+
         protected DateTime timeOfCompletionLocal { get; set; }
         public string TimeOfCompletionLocal
         {
@@ -68,6 +73,12 @@ namespace DailyQuestTimeScheduler
         {
             get { return timeOfCompletionLocal; }
         }
+
+        /// <summary>
+        /// This Delegate occurs when data change Invoke passes this class as parameter
+        /// </summary>
+        public Action<UserTask> OnDataChanged { get; set; }
+
         #endregion
 
         public UserTask()
@@ -92,6 +103,17 @@ namespace DailyQuestTimeScheduler
         {
             timeOfCompletionUTC = DateTime.UtcNow;
             timeOfCompletionLocal = DateTime.Now;
+        }
+
+
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        protected void ActionOnDataChanged()
+        {
+            OnDataChanged?.Invoke(this);
         }
     }
 }

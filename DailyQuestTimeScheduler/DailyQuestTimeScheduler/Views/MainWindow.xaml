@@ -1,4 +1,4 @@
-﻿<Window x:Class="DailyQuestTimeScheduler.MainWindow"
+﻿<Window x:Class="DailyQuestTimeScheduler.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,13 +6,16 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:DailyQuestTimeScheduler"
         xmlns:vm="clr-namespace:DailyQuestTimeScheduler.ViewModels"
+        xmlns:v ="clr-namespace:DailyQuestTimeScheduler.Views"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" AllowsTransparency="True" WindowStyle="None" WindowStartupLocation="CenterScreen">
 
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
-    <Grid>
+    <Grid >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -22,6 +25,7 @@
             <RowDefinition Height="0.15*"></RowDefinition>
             <RowDefinition Height="0.85*"></RowDefinition>
         </Grid.RowDefinitions>
+        <!-- Nav Bar-->
         <materialDesign:ColorZone Grid.Column ="0"  Grid.Row ="0"  Grid.ColumnSpan="3" Mode="PrimaryDark"  Padding="16" Height="65">
             <StackPanel Orientation="Horizontal">
                 <ToggleButton Style="{DynamicResource MaterialDesignHamburgerToggleButton}" />
@@ -31,23 +35,21 @@
                 Naviagation Bar
                 </TextBlock>
             </StackPanel>
-            
         </materialDesign:ColorZone>
-        <StackPanel Grid.Column ="0"  Grid.Row ="2">
-            <!--Bool Type Task List BOX -->
-            <ListBox x:Name="BoolTypeTaskList" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     ScrollViewer.VerticalScrollBarVisibility="Disabled" >
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-
-            </ListBox>
-                
-            
         
-        </StackPanel>
+        
+        <v:TaskListControl Grid.Column ="0"  Grid.Row ="2">
+             <!--Bool Type Task List BOX -->
+
+
+        </v:TaskListControl>
+        
+        <Button x:Name="ResetAll" Content="ResetAll" Grid.Column="1" HorizontalAlignment="Left" Height="30" Margin="43,18,0,0" Grid.Row="1" VerticalAlignment="Top" Width="90"
+                Command="{Binding ResetAllTaskListAsyncCommand}"/>
+        <Button x:Name="button2" Content="TestingDelete" Grid.Column="1" HorizontalAlignment="Left" Height="38" Margin="43,132,0,0" Grid.Row="1" VerticalAlignment="Top" Width="127"
+                Command="{Binding TestingDeleteAsyncCommand}"/>
+        <Button x:Name="button1" Content="AddTaskHolder" Grid.Column="1" HorizontalAlignment="Left" Height="36" Margin="43,78,0,0" Grid.Row="1" VerticalAlignment="Top" Width="142" RenderTransformOrigin="0.457,0"
+                Command="{Binding AddTaskAsyncCommand}"/>
 
     </Grid>
 

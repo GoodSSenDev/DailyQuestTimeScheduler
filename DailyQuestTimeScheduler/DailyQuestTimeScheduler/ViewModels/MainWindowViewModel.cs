@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.Printing;
 using System.Runtime.CompilerServices;
@@ -8,19 +9,26 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 
 namespace DailyQuestTimeScheduler.ViewModels
 {
+    /// <summary>
+    /// ViewModel for main page of application .
+    /// </summary>
     public class MainWindowViewModel
     {
+
+        #region members
+        private ObservableCollection<BoolTypeUserTask> boolTypeTaskList = new ObservableCollection<BoolTypeUserTask>();
+
+        UserTask selectedTask;
+
+        #endregion
+
+        #region properties
         public bool IsReseting { get; set; } = false;
 
-        public ICommand ResetAllTaskListAsyncCommand { get; set; }
-
-
-        public SqliteDataAccess DBAccess { get; set; }
-
-        private ObservableCollection<BoolTypeUserTask> boolTypeTaskList = new ObservableCollection<BoolTypeUserTask>();
         public ObservableCollection<BoolTypeUserTask> BoolTypeTaskList
         {
             get { return boolTypeTaskList; }
@@ -28,24 +36,74 @@ namespace DailyQuestTimeScheduler.ViewModels
 
         public List<NormalTaskHolder> TaskHolderList { get; set; }
 
+        public SqliteDataAccess DBAccess { get; set; }
+
+        public UserTask SelectedTask
+        {
+            get { return selectedTask; }
+            set
+            {
+
+            }
+        }
+
+        #endregion
+
+        #region Commands
+
+        public ICommand ResetAllTaskListAsyncCommand { get; set; }
+        public ICommand AddTaskAsyncCommand { get; set; }
+        public ICommand TestingDeleteAsyncCommand { get; set; }
+
+        #endregion     
+
         #region Constructor
 
         public MainWindowViewModel()
         {
             this.DBAccess = new SqliteDataAccessSqliteCon();
 
-            ResetAllTaskListAsyncCommand = new AsyncCommand(ResetAllTaskListAsync, CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
+            this.ResetAllTaskListAsyncCommand = new AsyncCommand(ResetAllTaskListAsync, CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
+            this.AddTaskAsyncCommand = new AsyncCommand(AddTaskHolderAsync, CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
+            this.TestingDeleteAsyncCommand = new AsyncCommand(TestingDeleteAsync, CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
+            this.TaskHolderList = new List<NormalTaskHolder>();
         }
 
         public MainWindowViewModel(SqliteDataAccess dBAccess)
         {
             this.DBAccess = dBAccess;
+            this.TaskHolderList = new List<NormalTaskHolder>();
         }
 
         #endregion
 
-
         #region Action
+        public async Task AddTaskHolderAsync()
+        {
+
+            await this.AssignNewTaskHolder(new NormalTaskHolder() { 
+                Title = "Testing",
+                Description = "This is testing1",
+                IsRepeat = true,
+                TaskDuration = 1,
+                WeeklyRepeatPattern = 0b00101010
+            });
+            await this.AssignNewTaskHolder(new NormalTaskHolder()
+            {
+                Title = "Testing2",
+                Description = "This is testing2",
+                IsRepeat = true,
+                TaskDuration = 1,
+                WeeklyRepeatPattern = 0b01010101
+            });
+        }
+
+        public async Task TestingDeleteAsync()
+        {
+            await this.DBAccess.DeleteTaskHolderAsync("Testing");
+            await this.DBAccess.DeleteTaskHolderAsync("Testing2");
+        }
+
 
         public async Task ResetAllTaskListAsync()
         {
@@ -53,24 +111,19 @@ namespace DailyQuestTimeScheduler.ViewModels
             {
                 IsReseting = true;
 
-                await this.UpdateAllTaskListAsync();
-                await ResetBoolTypeTaskListAsync();
+                await this.ResetBoolTypeTaskListAsync();
                 await this.UpdateAllTaskListAsync();
             }
             finally
             {
                 IsReseting = false;
             }
+
         }
 
         public bool CanExcuteResetAllTaskList()
         {
             return !(IsReseting);
-        }
-
-        public async Task<List<NormalTaskHolder>> GetTaskHolderListAsync()
-        {
-            return TaskHolderList = await DBAccess.GetTaskHolderListAsync();
         }
 
         /// <summary>
@@ -81,8 +134,9 @@ namespace DailyQuestTimeScheduler.ViewModels
         private async Task ResetBoolTypeTaskListAsync()
         {
             TaskHolderList.Clear();
-            boolTypeTaskList.Clear();
+            BoolTypeTaskList.Clear();
 
+            await this.GetTaskHolderListAsync();
             await this.BringUnfinishedBoolTypeTasksAsync();
             await this.AssignTodaysBoolTaskAsync();
         }
@@ -91,10 +145,15 @@ namespace DailyQuestTimeScheduler.ViewModels
         #endregion
 
         #region Fundamental DBAccess Class
+        public async Task<List<NormalTaskHolder>> GetTaskHolderListAsync()
+        {
+            return TaskHolderList = await DBAccess.GetTaskHolderListAsync();
+        }
 
         public async Task AssignNewTaskHolder(NormalTaskHolder taskHolder)
         {
             await DBAccess.CreateNewTaskHolderAsync(taskHolder);
+
         }
 
         public async Task BringUnfinishedBoolTypeTasksAsync()
@@ -106,14 +165,14 @@ namespace DailyQuestTimeScheduler.ViewModels
 
             foreach (var taskHolder in TaskHolderList)
             {
-                var daysFromTaskHolderInitDay = (taskHolder.InitTimeData - DateTime.Now).TotalDays;
+                var daysFromTaskHolderInitDay = (DateTime.Now - taskHolder.InitTimeData).TotalDays;
 
-                var checkUntilday = (taskHolder.TaskDuration > daysFromTaskHolderInitDay)
+                var checkUntilday = (taskHolder.TaskDuration < daysFromTaskHolderInitDay)
                     ? taskHolder.TaskDuration : daysFromTaskHolderInitDay;
 
                 for (int i = 1; i < checkUntilday; i++)
                 {
-                    //For mod of negative number i mode 2 times 
+                    //mod of negative number i
                     var checkingDay = ((int)0b00000001 << ((today - i) % 7 + 7) % 7);
                      
                     if ((taskHolder.WeeklyRepeatPattern & checkingDay) == checkingDay)
@@ -127,10 +186,21 @@ namespace DailyQuestTimeScheduler.ViewModels
 
                         taskHolder.CurrentTaskList.Add(boolTypeTask);
 
+                        boolTypeTask.OnDataChanged += UpdateCetainTask;
                         BoolTypeTaskList.Add(boolTypeTask);
+
                     }
                 }
                 
+            }
+        }
+
+        private void UpdateCetainTask(UserTask task)
+        {
+            if (task is BoolTypeUserTask t)
+            {
+                UpdateTaskAsync(t).FireAndForgetSafeAsync(new ErrorMeesageWhenException());
+                return;
             }
         }
 
@@ -162,6 +232,7 @@ namespace DailyQuestTimeScheduler.ViewModels
 
                     taskHolder.CurrentTaskList.Add(boolTypeTask);
 
+                    boolTypeTask.OnDataChanged += UpdateCetainTask;
                     BoolTypeTaskList.Add(boolTypeTask);
                 }
 
@@ -179,7 +250,7 @@ namespace DailyQuestTimeScheduler.ViewModels
 
             foreach(var taskHolder in TaskHolderList)
             {
-                for(int i = 0; i< taskHolder.CurrentTaskList.Count; i++)
+                for(int i = 0; i < taskHolder.CurrentTaskList.Count; i++)
                 {
                     await DBAccess.UpsertUserTaskAsync(taskHolder.CurrentTaskList[i]);
                 }
@@ -197,8 +268,6 @@ namespace DailyQuestTimeScheduler.ViewModels
             await DBAccess.UpsertUserTaskAsync(userTask);
         }
         #endregion
-
-
 
     }
 }
