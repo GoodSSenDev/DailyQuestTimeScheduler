@@ -36,21 +36,31 @@
                 </TextBlock>
             </StackPanel>
         </materialDesign:ColorZone>
-        
-        
+
         <v:TaskListControl Grid.Column ="0"  Grid.Row ="2">
-             <!--Bool Type Task List BOX -->
+            <!--Bool Type Task List BOX -->
 
 
         </v:TaskListControl>
-        
-        <Button x:Name="ResetAll" Content="ResetAll" Grid.Column="1" HorizontalAlignment="Left" Height="30" Margin="43,18,0,0" Grid.Row="1" VerticalAlignment="Top" Width="90"
+
+
+        <Button x:Name="ResetAll"
+                Content="ResetAll"
+                Grid.Column="1"
+                HorizontalAlignment="Left"
+                Height="30"
+                Margin="43,18,0,0" Grid.Row="1"
+                VerticalAlignment="Top"
+                Width="90"
                 Command="{Binding ResetAllTaskListAsyncCommand}"/>
-        <Button x:Name="button2" Content="TestingDelete" Grid.Column="1" HorizontalAlignment="Left" Height="38" Margin="43,132,0,0" Grid.Row="1" VerticalAlignment="Top" Width="127"
+        <Button x:Name="button2"
+                Content="TestingDelete"
+                Grid.Column="1" HorizontalAlignment="Left" Height="38" Margin="43,132,0,0" Grid.Row="1" VerticalAlignment="Top" Width="127"
                 Command="{Binding TestingDeleteAsyncCommand}"/>
         <Button x:Name="button1" Content="AddTaskHolder" Grid.Column="1" HorizontalAlignment="Left" Height="36" Margin="43,78,0,0" Grid.Row="1" VerticalAlignment="Top" Width="142" RenderTransformOrigin="0.457,0"
                 Command="{Binding AddTaskAsyncCommand}"/>
 
+        <v:TaskHolderSettingsControl Grid.ColumnSpan="3" Grid.Row="1"/>
     </Grid>
 
 

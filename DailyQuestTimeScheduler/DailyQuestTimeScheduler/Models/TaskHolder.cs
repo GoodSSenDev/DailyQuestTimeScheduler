@@ -17,11 +17,17 @@ namespace DailyQuestTimeScheduler
 {
     public abstract class TaskHolder 
     {
-        public List<UserTask> CurrentTaskList { get; set; }
-
+        #region members
         //Title cannot change once it set
         private string title = null;
-        public new string Title
+
+        protected DateTime initTime;
+        #endregion
+
+        #region properties
+        public List<UserTask> CurrentTaskList { get; set; }
+
+        public string Title
         {
             get { return title; }
             set
@@ -43,8 +49,6 @@ namespace DailyQuestTimeScheduler
 
         public int TimeTakeToMakeTask { get; set; }
 
-        protected DateTime initTime;
-
         public string InitTime
         {
             get
@@ -61,6 +65,8 @@ namespace DailyQuestTimeScheduler
         {
             get { return initTime; }
         }
+
+        #endregion
 
         //For DataBase (Default constructor)
         public TaskHolder()

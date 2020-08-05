@@ -3,23 +3,140 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:DailyQuestTimeScheduler.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <StackPanel Grid.Column ="0"  Grid.Row ="2">
-            <!--Bool Type Task List BOX -->
-            <ListBox x:Name="BoolTypeTaskList" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        ScrollViewer.VerticalScrollBarVisibility="Disabled" ItemsSource="{Binding Path = BoolTypeTaskList}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <CheckBox IsChecked="{Binding Path=IsTaskDone}"></CheckBox>
-                            <TextBlock Margin="10,0,10,0" Text="{Binding Title}"></TextBlock>
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ListBox>
-        </StackPanel>
+        <Border Background="{DynamicResource MaterialDesignDarkBackground}" Opacity="0.90"/>
+
+        <Border Background="{DynamicResource MaterialDesignPaper}"  HorizontalAlignment="Center" Height="350" Margin="0,10,0,0" VerticalAlignment="Top" Width="300">
+            <!--white sheet-->
+            <StackPanel Orientation="Vertical">
+                <!-- Weekly Repeat Pattern button -->
+                <StackPanel Orientation="Horizontal" Margin=" 5,5,5,5">
+                    <ToggleButton Style="{StaticResource MaterialDesignActionToggleButton}"
+                            ToolTip="MaterialDesignFlatPrimaryToggleButton"
+                            IsChecked="False">
+                        <ToggleButton.Content>
+                            <materialDesign:PackIcon Kind="RepeatOff" />
+                        </ToggleButton.Content>
+                        <materialDesign:ToggleButtonAssist.OnContent>
+                            <materialDesign:PackIcon Kind="Repeat" />
+                        </materialDesign:ToggleButtonAssist.OnContent>
+                    </ToggleButton>
+                    <ToggleButton
+                        Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
+                        ToolTip="MaterialDesignFlatPrimaryToggleButton"
+                        IsChecked="True" Width="32" Height="32" Margin="5,0,2,0"
+                        FontSize="11" FontWeight="UltraBold">
+                        SUN
+                    </ToggleButton>
+                    <ToggleButton
+                        Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
+                        ToolTip="MaterialDesignFlatPrimaryToggleButton"
+                        IsChecked="True" Width="32" Height="32" Margin="3,0,2,0"
+                        FontSize="11" FontWeight="UltraBold">
+                        MON
+                    </ToggleButton>
+                    <ToggleButton
+                        Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
+                        ToolTip="MaterialDesignFlatPrimaryToggleButton"
+                        IsChecked="True" Width="32" Height="32" Margin="3,0,2,0"
+                        FontSize="11" FontWeight="UltraBold">
+                        TUE
+                    </ToggleButton>
+                    <ToggleButton
+                        Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
+                        ToolTip="MaterialDesignFlatPrimaryToggleButton"
+                        IsChecked="True" Width="32" Height="32" Margin="3,0,2,0"
+                        FontSize="11" FontWeight="UltraBold">
+                        WED
+                    </ToggleButton>
+                    <ToggleButton
+                        Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
+                        ToolTip="MaterialDesignFlatPrimaryToggleButton"
+                        IsChecked="True" Width="32" Height="32" Margin="3,0,2,0"
+                        FontSize="11" FontWeight="UltraBold">
+                        THU
+                    </ToggleButton>
+                    <ToggleButton
+                        Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
+                        ToolTip="MaterialDesignFlatPrimaryToggleButton"
+                        IsChecked="True" Width="32" Height="32" Margin="3,0,2,0"
+                        FontSize="11" FontWeight="UltraBold">
+                        FRI
+                    </ToggleButton>
+                    <ToggleButton
+                        Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
+                        ToolTip="MaterialDesignFlatPrimaryToggleButton"
+                        IsChecked="True" Width="32" Height="32" Margin="3,0,2,0"
+                        FontSize="11" FontWeight="UltraBold">
+                        SAT
+                    </ToggleButton>
+                </StackPanel>
+
+                <TextBox Margin="5,5,5,5"
+                        Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
+                        Height="41"
+                        FontFamily="{DynamicResource MaterialDesignFont}"
+                        Foreground="{DynamicResource MaterialDesignTextBoxBorder}"
+                        AcceptsReturn="True"
+                        TextWrapping="Wrap"
+                        VerticalScrollBarVisibility="Auto"
+                        materialDesign:HintAssist.Hint="Title"/>
+
+                <TextBox Margin="5,5,5,5"
+                        Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
+                        Height="163"
+                        FontFamily="{DynamicResource MaterialDesignFont}"
+                        Foreground="{DynamicResource MaterialDesignTextBoxBorder}"
+                        AcceptsReturn="True"
+                        TextWrapping="Wrap"
+                        VerticalScrollBarVisibility="Auto"
+                        materialDesign:HintAssist.Hint="Description"/>
+                <!--Date Selection -->
+                <StackPanel Orientation="Horizontal">
+
+                    <TextBox
+                            Margin="5,0,0,0"
+                            materialDesign:HintAssist.Hint="Required Days"
+                            FontFamily="{DynamicResource MaterialDesignFont}"
+                            Foreground="{DynamicResource MaterialDesignTextBoxBorder}"
+                            Style="{StaticResource MaterialDesignFloatingHintTextBox}" Width="78" Height="41" />
+
+                    <DatePicker
+                            x:Name="FutureDatePicker"
+                            Margin="130,0,5,0"
+                            VerticalAlignment="Bottom"
+                            
+                            FontFamily="{DynamicResource MaterialDesignFont}"
+                            Foreground="{DynamicResource MaterialDesignTextBoxBorder}"
+                            Width="83"
+                            
+                            materialDesign:HintAssist.Hint= "Future Date">
+
+                        <DatePicker.BlackoutDates>
+                            <CalendarDateRange Start="1/1/0001" End="12/31/1969"/>
+                        </DatePicker.BlackoutDates>
+                    </DatePicker>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                    <Button
+                            Margin="0,0,10,0"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            ToolTip="MaterialDesignFlatButton">
+                        CREATE
+                    </Button>
+                    <Button
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            ToolTip="MaterialDesignFlatButton">
+                        CANCEL
+                    </Button>
+                </StackPanel>
+
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

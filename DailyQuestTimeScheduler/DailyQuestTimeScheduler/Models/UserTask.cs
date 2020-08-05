@@ -16,13 +16,21 @@ namespace DailyQuestTimeScheduler
 {
     public abstract class UserTask : INotifyPropertyChanged
     {
+        #region member
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected DateTime date;
+
+        protected DateTime timeOfCompletionUTC;
+
+        protected DateTime timeOfCompletionLocal;
+
+        #endregion
 
         #region properties
         public string Title { get; set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
-        protected DateTime date;
         public string Date
         {
             get
@@ -35,12 +43,12 @@ namespace DailyQuestTimeScheduler
                 date = Convert.ToDateTime(value, CultureInfo.CreateSpecificCulture("es-ES"));
             }
         }
+
         public DateTime DateData
         { 
             get { return date; }
         }
 
-        protected DateTime timeOfCompletionUTC;
         public string TimeOfCompletionUTC
         {
             get { return timeOfCompletionUTC.ToString("G",
@@ -50,13 +58,13 @@ namespace DailyQuestTimeScheduler
                 timeOfCompletionUTC = Convert.ToDateTime(value, CultureInfo.CreateSpecificCulture("es-ES"));
             }
         }
+
         public DateTime TimeOfCompletionUTCData
         {
             get { return timeOfCompletionUTC; }
         }
 
 
-        protected DateTime timeOfCompletionLocal { get; set; }
         public string TimeOfCompletionLocal
         {
             get
@@ -104,7 +112,6 @@ namespace DailyQuestTimeScheduler
             timeOfCompletionUTC = DateTime.UtcNow;
             timeOfCompletionLocal = DateTime.Now;
         }
-
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
