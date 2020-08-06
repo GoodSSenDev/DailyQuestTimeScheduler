@@ -15,7 +15,7 @@
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
-    <Grid >
+    <Grid x:Name="MainPageGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -59,8 +59,6 @@
                 Command="{Binding TestingDeleteAsyncCommand}"/>
         <Button x:Name="button1" Content="AddTaskHolder" Grid.Column="1" HorizontalAlignment="Left" Height="36" Margin="43,78,0,0" Grid.Row="1" VerticalAlignment="Top" Width="142" RenderTransformOrigin="0.457,0"
                 Command="{Binding AddTaskAsyncCommand}"/>
-
-        <v:TaskHolderSettingsControl Grid.ColumnSpan="3" Grid.Row="1"/>
     </Grid>
 
 

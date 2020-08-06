@@ -31,7 +31,7 @@ namespace DailyQuestTimeScheduler
         }
 
         public NormalTaskHolder(string title, string description, bool isRepeat, byte weeklyRepeatPattern,
-        int taskDuration, int timeTakeToMakeTask, DateTime initTime)
+            int taskDuration, int timeTakeToMakeTask, DateTime initTime)
         {
             this.Title = title;
             this.Description = description;

@@ -141,6 +141,10 @@ namespace DailyQuestTimeScheduler.ViewModels
             await this.AssignTodaysBoolTaskAsync();
         }
 
+        public async Task CreateTaskHolderSettingPage()
+        {
+
+        }
 
         #endregion
 
