@@ -29,7 +29,7 @@
                     <ToggleButton
                         Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
                         ToolTip="MaterialDesignFlatPrimaryToggleButton"
-                        IsChecked="{Binding SundayBool}" 
+                        IsChecked="{Binding SundayBool, Mode=TwoWay}" 
                         IsEnabled="{Binding IsRepeat, Mode=TwoWay}" 
                         Width="32" Height="32" Margin="5,0,2,0"
                         FontSize="11" FontWeight="UltraBold">
@@ -38,7 +38,7 @@
                     <ToggleButton
                         Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
                         ToolTip="MaterialDesignFlatPrimaryToggleButton"
-                        IsChecked="{Binding MondayBool}" 
+                        IsChecked="{Binding MondayBool, Mode=TwoWay}" 
                         IsEnabled="{Binding IsRepeat, Mode=TwoWay}"
                         Width="32" Height="32" Margin="3,0,2,0"
                         FontSize="11" FontWeight="UltraBold">
@@ -47,7 +47,7 @@
                     <ToggleButton
                         Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
                         ToolTip="MaterialDesignFlatPrimaryToggleButton"
-                        IsChecked="{Binding TuesdayBool}" 
+                        IsChecked="{Binding TuesdayBool, Mode=TwoWay}" 
                         IsEnabled="{Binding IsRepeat, Mode=TwoWay}"
                         Width="32" Height="32" Margin="3,0,2,0"
                         FontSize="11" FontWeight="UltraBold">
@@ -56,7 +56,7 @@
                     <ToggleButton
                         Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
                         ToolTip="MaterialDesignFlatPrimaryToggleButton"
-                        IsChecked="{Binding WednesdayBool}" 
+                        IsChecked="{Binding WednesdayBool, Mode=TwoWay}" 
                         IsEnabled="{Binding IsRepeat, Mode=TwoWay}"
                         Width="32" Height="32" Margin="3,0,2,0"
                         FontSize="11" FontWeight="UltraBold">
@@ -65,7 +65,7 @@
                     <ToggleButton
                         Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
                         ToolTip="MaterialDesignFlatPrimaryToggleButton"
-                        IsChecked="{Binding ThursdayBool}" 
+                        IsChecked="{Binding ThursdayBool, Mode=TwoWay}" 
                         IsEnabled="{Binding IsRepeat, Mode=TwoWay}"
                          Width="32" Height="32" Margin="3,0,2,0"
                         FontSize="11" FontWeight="UltraBold">
@@ -74,7 +74,7 @@
                     <ToggleButton
                         Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
                         ToolTip="MaterialDesignFlatPrimaryToggleButton"
-                        IsChecked="{Binding FridayBool}" 
+                        IsChecked="{Binding FridayBool, Mode=TwoWay}" 
                         IsEnabled="{Binding IsRepeat, Mode=TwoWay}"
                          Width="32" Height="32" Margin="3,0,2,0"
                         FontSize="11" FontWeight="UltraBold">
@@ -83,7 +83,7 @@
                     <ToggleButton
                         Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
                         ToolTip="MaterialDesignFlatPrimaryToggleButton"
-                        IsChecked="{Binding SaturdayBool}" 
+                        IsChecked="{Binding SaturdayBool, Mode=TwoWay}" 
                         IsEnabled="{Binding IsRepeat, Mode=TwoWay}"
                          Width="32" Height="32" Margin="3,0,2,0"
                         FontSize="11" FontWeight="UltraBold">
@@ -96,6 +96,7 @@
                     Height="41"
                     FontFamily="{DynamicResource MaterialDesignFont}"
                     Foreground="{DynamicResource MaterialDesignTextBoxBorder}"
+                    Text="{Binding Title}"
                     AcceptsReturn="True"
                     TextWrapping="Wrap"
                     VerticalScrollBarVisibility="Auto"
@@ -106,6 +107,7 @@
                     Height="163"
                     FontFamily="{DynamicResource MaterialDesignFont}"
                     Foreground="{DynamicResource MaterialDesignTextBoxBorder}"
+                    Text="{Binding Description}"
                     AcceptsReturn="True"
                     TextWrapping="Wrap"
                     VerticalScrollBarVisibility="Auto"

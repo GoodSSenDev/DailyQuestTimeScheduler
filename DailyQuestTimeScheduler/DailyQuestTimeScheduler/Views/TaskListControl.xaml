@@ -12,7 +12,7 @@
                 <Grid>
                     <StackPanel Orientation="Vertical">
                         <!--Bool Type Task List BOX -->
-                        <ListBox x:Name="BoolTypeTaskList" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        <ListBox x:Name="BoolTypeTaskList" SelectedItem="{Binding SelectedTaskHolder}" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                             ScrollViewer.VerticalScrollBarVisibility="Disabled" ItemsSource="{Binding Path = BoolTypeTaskList}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>

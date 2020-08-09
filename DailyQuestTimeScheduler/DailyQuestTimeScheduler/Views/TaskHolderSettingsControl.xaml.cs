@@ -25,7 +25,7 @@ namespace DailyQuestTimeScheduler.Views
         #region Members
 
         private TaskHolder taskHolder = null;
-        private Action<TaskHolder> onAcceptButtonClick;
+        private Func<TaskHolder, Task> onAcceptButtonClick;
         private Action onCancelButtonClick;
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -50,7 +50,7 @@ namespace DailyQuestTimeScheduler.Views
         #endregion
 
         #region Properties
-        public Action<TaskHolder> OnAcceptButtonClick
+        public Func<TaskHolder,Task> OnAcceptButtonClick
         {
             get { return onAcceptButtonClick; }
             set { onAcceptButtonClick = value; }
@@ -275,15 +275,18 @@ namespace DailyQuestTimeScheduler.Views
             this.FridayBool = weekOfDayboolList[5];
             this.SaturdayBool = weekOfDayboolList[6];
         }
-
+        /// <summary>
+        /// return byte value made out of DayOfWeek properties
+        /// </summary>
+        /// <returns></returns>
         private byte GetWeeklyRepeatPattern()
         {
-            var weekltRepeatPattern = 0;
-            if (sundayBool)
+            int weeklyRepeatPattern = 0;
+            if (SundayBool)
                 weeklyRepeatPattern += 1;
-            if (mondayBool)
+            if (MondayBool)
                 weeklyRepeatPattern += 2;
-            if (tuesdayBool)
+            if (TuesdayBool)
                 weeklyRepeatPattern += 4;
             if (wednesdayBool)
                 weeklyRepeatPattern += 8;
@@ -294,7 +297,7 @@ namespace DailyQuestTimeScheduler.Views
             if (saturdayBool)
                 weeklyRepeatPattern += 64;
 
-            return (byte)weekltRepeatPattern;
+            return (byte)weeklyRepeatPattern;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)
@@ -307,6 +310,11 @@ namespace DailyQuestTimeScheduler.Views
             OnCancelButtonClick?.Invoke();
         }
 
+        /// <summary>
+        /// Invoke the event with TaskHolder based on Properties that an user wrote.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CreateBtn_Click(object sender, RoutedEventArgs e)
         {
             SetTaskHolderValues();
@@ -314,6 +322,9 @@ namespace DailyQuestTimeScheduler.Views
             OnAcceptButtonClick?.Invoke(taskHolder);
         }
 
+        /// <summary>
+        /// Set the TaskHolde based on Properties
+        /// </summary>
         private void SetTaskHolderValues()
         {
             if (taskHolder == null) 
@@ -336,11 +347,16 @@ namespace DailyQuestTimeScheduler.Views
                 if (isRepeat)
                     normalTaskHolder.TaskDuration = this.TaskDuration;
                 else
-                    normalTaskHolder.TaskDuration = (DateTime.Now - this.dueDate).Days;
+                    normalTaskHolder.TaskDuration = (this.dueDate -DateTime.Now).Days;
             }
             this.taskHolder.WeeklyRepeatPattern = GetWeeklyRepeatPattern();
         }
 
+        /// <summary>
+        /// Rule: user can only write the numbers 0-9
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");

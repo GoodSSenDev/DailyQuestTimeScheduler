@@ -72,6 +72,7 @@ namespace DailyQuestTimeScheduler
         public TaskHolder()
         {
             this.CurrentTaskList = new List<UserTask>();
+            this.initTime = DateTime.Now;
         }
 
         public TaskHolder(DateTime initTime)

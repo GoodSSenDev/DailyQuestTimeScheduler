@@ -43,22 +43,25 @@
 
         </v:TaskListControl>
 
-
         <Button x:Name="ResetAll"
                 Content="ResetAll"
-                Grid.Column="1"
                 HorizontalAlignment="Left"
-                Height="30"
-                Margin="43,18,0,0" Grid.Row="1"
+                Height="86"
+                Margin="5,2,0,0"
                 VerticalAlignment="Top"
                 Width="90"
-                Command="{Binding ResetAllTaskListAsyncCommand}"/>
+                Command="{Binding ResetAllTaskListAsyncCommand}" Grid.Column="1" Grid.Row="1"/>
         <Button x:Name="button2"
-                Content="TestingDelete"
-                Grid.Column="1" HorizontalAlignment="Left" Height="38" Margin="43,132,0,0" Grid.Row="1" VerticalAlignment="Top" Width="127"
-                Command="{Binding TestingDeleteAsyncCommand}"/>
-        <Button x:Name="button1" Content="AddTaskHolder" Grid.Column="1" HorizontalAlignment="Left" Height="36" Margin="43,78,0,0" Grid.Row="1" VerticalAlignment="Top" Width="142" RenderTransformOrigin="0.457,0"
-                Command="{Binding AddTaskAsyncCommand}"/>
+                Content="Delete"
+                Grid.Column="1" HorizontalAlignment="Left" Height="86" Margin="100,2,0,0" Grid.Row="1" VerticalAlignment="Top" Width="95"
+                Command="{Binding DeleteSelectedTaskHolderAsyncCommand}"/>
+        <Button x:Name="CreatingTaskHolderButton" Command="{Binding CreatingTaskHolderSettingControlCommand}" Content="CreateTaskHolder" Grid.Column="1" HorizontalAlignment="Left" Margin="5,92,0,0" VerticalAlignment="Top" Grid.Row="1" Width="190" Height="50"/>
+
+        <Grid Grid.ColumnSpan ="3"  Grid.Row="1">
+            <ContentControl Content="{Binding SettingContent}"></ContentControl>
+
+        </Grid>
+
     </Grid>
 
 
