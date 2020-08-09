@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="DailyQuestTimeScheduler.Views.TaskListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DailyQuestTimeScheduler.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Template>
+        <ControlTemplate TargetType="UserControl">
+            <Border Background="{TemplateBinding Background}">
+                <Grid>
+                    <StackPanel Orientation="Vertical">
+                        <!--Bool Type Task List BOX -->
+                        <ListBox x:Name="BoolTypeTaskList" SelectedItem="{Binding SelectedTaskHolder}" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                            ScrollViewer.VerticalScrollBarVisibility="Disabled" ItemsSource="{Binding Path = BoolTypeTaskList}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding Path=IsTaskDone}"></CheckBox>
+                                        <TextBlock Margin="10,0,10,0" Text="{Binding Title}"></TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ListBox>
+                        <ContentPresenter/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </ControlTemplate>
+    </UserControl.Template>
+</UserControl>
+ 

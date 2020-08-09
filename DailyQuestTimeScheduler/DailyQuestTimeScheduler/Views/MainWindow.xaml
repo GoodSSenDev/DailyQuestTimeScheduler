@@ -1,0 +1,68 @@
+﻿<Window x:Class="DailyQuestTimeScheduler.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:DailyQuestTimeScheduler"
+        xmlns:vm="clr-namespace:DailyQuestTimeScheduler.ViewModels"
+        xmlns:v ="clr-namespace:DailyQuestTimeScheduler.Views"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" AllowsTransparency="True" WindowStyle="None" WindowStartupLocation="CenterScreen">
+
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+    <Grid x:Name="MainPageGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions >
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="0.85*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <!-- Nav Bar-->
+        <materialDesign:ColorZone Grid.Column ="0"  Grid.Row ="0"  Grid.ColumnSpan="3" Mode="PrimaryDark"  Padding="16" Height="65">
+            <StackPanel Orientation="Horizontal">
+                <ToggleButton Style="{DynamicResource MaterialDesignHamburgerToggleButton}" />
+                <TextBlock
+                  VerticalAlignment="Center"
+                  Margin="16 0 0 0">
+                Naviagation Bar
+                </TextBlock>
+            </StackPanel>
+        </materialDesign:ColorZone>
+
+        <v:TaskListControl Grid.Column ="0"  Grid.Row ="2">
+            <!--Bool Type Task List BOX -->
+
+
+        </v:TaskListControl>
+
+        <Button x:Name="ResetAll"
+                Content="ResetAll"
+                HorizontalAlignment="Left"
+                Height="86"
+                Margin="5,2,0,0"
+                VerticalAlignment="Top"
+                Width="90"
+                Command="{Binding ResetAllTaskListAsyncCommand}" Grid.Column="1" Grid.Row="1"/>
+        <Button x:Name="button2"
+                Content="Delete"
+                Grid.Column="1" HorizontalAlignment="Left" Height="86" Margin="100,2,0,0" Grid.Row="1" VerticalAlignment="Top" Width="95"
+                Command="{Binding DeleteSelectedTaskHolderAsyncCommand}"/>
+        <Button x:Name="CreatingTaskHolderButton" Command="{Binding CreatingTaskHolderSettingControlCommand}" Content="CreateTaskHolder" Grid.Column="1" HorizontalAlignment="Left" Margin="5,92,0,0" VerticalAlignment="Top" Grid.Row="1" Width="190" Height="50"/>
+
+        <Grid Grid.ColumnSpan ="3"  Grid.Row="1">
+            <ContentControl Content="{Binding SettingContent}"></ContentControl>
+
+        </Grid>
+
+    </Grid>
+
+
+</Window>
