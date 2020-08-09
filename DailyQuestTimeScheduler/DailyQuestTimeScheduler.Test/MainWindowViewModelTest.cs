@@ -47,6 +47,7 @@ namespace DailyQuestTimeScheduler.Tests
         public async Task BringUnfinishedTasks_ShouldReturnUnfinishedTasks()
         {
             byte Test1WeekPattern = 0b01010101;
+            byte Test2WeekPattern = 0b00101010;
 
             var dBAccessClass = new Mock<SqliteDataAccess>();
 
@@ -73,10 +74,12 @@ namespace DailyQuestTimeScheduler.Tests
 
             if ((Test1WeekPattern & Today) == Today)
             {
+                Assert.Single(mainWindowVM.TaskHolderList[0].CurrentTaskList);
+            }
+            if ((Test2WeekPattern & Today) == Today)
+            {
                 Assert.Single(mainWindowVM.TaskHolderList[1].CurrentTaskList);
             }
-            else
-                Assert.Single(mainWindowVM.TaskHolderList[0].CurrentTaskList);
 
         }
     }
