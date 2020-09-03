@@ -1,4 +1,6 @@
 ﻿using DailyQuestTimeScheduler.Views;
+using LiveCharts;
+using LiveCharts.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -72,26 +74,45 @@ namespace DailyQuestTimeScheduler.ViewModels
         public ICommand ResetAllTaskListAsyncCommand { get; set; }
         public ICommand DeleteSelectedTaskHolderAsyncCommand { get; set; }
         public ICommand CreatingTaskHolderSettingControlCommand { get; set; }
+        public ICommand InsertTestingDataAsyncCommand { get; set; }
 
         #endregion     
 
         #region Constructor
+        public SeriesCollection SeriesCollection { get; set; }
 
         public MainWindowViewModel()
         {
             this.DBAccess = new SqliteDataAccessSqliteCon();
 
-            this.ResetAllTaskListAsyncCommand = new AsyncCommand(ResetAllTaskListAsync, CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
-            this.DeleteSelectedTaskHolderAsyncCommand = new AsyncCommand(DeleteSeletedTaskHolderAsync, CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
+            this.ResetAllTaskListAsyncCommand = new AsyncCommand(ResetAllTaskListAsync, 
+                CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
+            this.DeleteSelectedTaskHolderAsyncCommand = new AsyncCommand(DeleteSeletedTaskHolderAsync,
+                CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
+            this.InsertTestingDataAsyncCommand = new AsyncCommand(InsertTestingDataSetAsync,
+                CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
             this.CreatingTaskHolderSettingControlCommand = new DelegateCommand(AssignTaskHolderCreateControl);
             this.TaskHolderList = new List<NormalTaskHolder>();
+            SeriesCollection = new SeriesCollection
+            {
+                new LineSeries
+                {
+                    Values = new ChartValues<double> { 3, 5, 7, 4 }
+                },
+                new ColumnSeries
+                {
+                    Values = new ChartValues<decimal> { 5, 6, 2, 7 }
+                }
+            };
         }
 
         public MainWindowViewModel(SqliteDataAccess dBAccess)
         {
             this.DBAccess = dBAccess;
-            this.ResetAllTaskListAsyncCommand = new AsyncCommand(ResetAllTaskListAsync, CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
-            this.DeleteSelectedTaskHolderAsyncCommand = new AsyncCommand(DeleteSeletedTaskHolderAsync, CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
+            this.ResetAllTaskListAsyncCommand = new AsyncCommand(ResetAllTaskListAsync,
+                CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
+            this.DeleteSelectedTaskHolderAsyncCommand = new AsyncCommand(DeleteSeletedTaskHolderAsync,
+                CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
             this.CreatingTaskHolderSettingControlCommand = new DelegateCommand(AssignTaskHolderCreateControl); 
             this.TaskHolderList = new List<NormalTaskHolder>();
         }
@@ -99,6 +120,7 @@ namespace DailyQuestTimeScheduler.ViewModels
         #endregion
 
         #region Action
+
 
         public async Task DeleteSeletedTaskHolderAsync()
         {
@@ -154,10 +176,10 @@ namespace DailyQuestTimeScheduler.ViewModels
             if (SettingContent == null)
             {
                 this.SettingContent = new TaskHolderSettingsControl() 
-                    { 
-                        OnAcceptButtonClick = AssignNewTaskHolderFromControlAsync,
-                        OnCancelButtonClick = UnsetSettingControl
-                    };
+                { 
+                    OnAcceptButtonClick = AssignNewTaskHolderFromControlAsync,
+                    OnCancelButtonClick = UnsetSettingControl
+                };
             }
         }
 
@@ -183,6 +205,45 @@ namespace DailyQuestTimeScheduler.ViewModels
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        #endregion
+
+        #region ForTesing
+        /// <summary>
+        /// This class is for inserthing test data to see the live chart graph working or not.
+        /// </summary>
+        private async Task InsertTestingDataSetAsync()
+        {
+            Random rand = new Random();
+            int taskDuration = 1;
+            byte weeklyRepeatPattern = 0b01010101;
+            int numOfDate = 30;
+            List<Task> tasks = new List<Task>();
+            DateTime numOfDayInTestingData = DateTime.Now - TimeSpan.FromDays(numOfDate);
+
+            var today = (int)DateTime.Now.DayOfWeek;
+            var taskHolder = new NormalTaskHolder("TestingData", "This is Testing", true, weeklyRepeatPattern, taskDuration, 3320, numOfDayInTestingData);
+
+            await DBAccess.CreateNewTaskHolderAsync(taskHolder);
+
+            for(int j = 0; j < numOfDate ; j++)
+            {
+                var checkingDayOfWeek = ((int)0b00000001 << ((today - j) % 7 + 7) % 7);
+                if((weeklyRepeatPattern & checkingDayOfWeek) == checkingDayOfWeek)
+                {
+                    tasks.Add(DBAccess.UpsertUserTaskAsync(new BoolTypeUserTask("TestingData",
+                        DateTime.Now - TimeSpan.FromDays(j)) 
+                        {  
+                            IsTaskDone = ( rand.NextDouble() > 0.5), 
+                            TimeOfCompletionLocal = (DateTime.Now - TimeSpan.FromDays(j) - TimeSpan.FromHours(rand.Next(-5,3))).ToString("G", CultureInfo.CreateSpecificCulture("es-ES"))
+                            //Set Random data.
+                        }));
+                }
+            }
+            await Task.WhenAll(tasks);
+
+            await ResetAllTaskListAsync();
         }
 
         #endregion
@@ -217,51 +278,43 @@ namespace DailyQuestTimeScheduler.ViewModels
                 if (!taskHolder.IsRepeat)
                 {
                     if (taskHolder.TaskDuration + 1 >= totalDaysAfterInitDay)
-                    {
-                        var boolTypeTask = await DBAccess.GetTaskOnSpecificDateAsync(taskHolder.Title, taskHolder.InitTimeData.ToString("G",
-                            CultureInfo.CreateSpecificCulture("es-ES")));
-                        if (boolTypeTask == null)
-                            boolTypeTask = new BoolTypeUserTask(taskHolder.Title, taskHolder.InitTimeData);
-                        else
-                            boolTypeTask.Title = taskHolder.Title;
-                        taskHolder.CurrentTaskList.Add(boolTypeTask);
-
-                        boolTypeTask.OnDataChanged += UpdateCertainTask;
-                        BoolTypeTaskList.Add(boolTypeTask);
-                    }
+                        //dupli
+                        await BringSpecificTaskOnTaskHolder(taskHolder, taskHolder.InitTimeData);
+                        //else
+                        //    boolTypeTask.Title = taskHolder.Title;
                 }
                 else
                 {
-
-                    var checkUntilday = (taskHolder.TaskDuration < totalDaysAfterInitDay)
+                    var checkUntilDay = (taskHolder.TaskDuration < totalDaysAfterInitDay)
                         ? taskHolder.TaskDuration : totalDaysAfterInitDay;
 
-                    for (int i = 1; i < checkUntilday; i++)
+                    for (int i = 1; i < checkUntilDay; i++)
                     {
-                        //mod of negative number i
+                        //mod of negative number i to find dayOfWeek constraint
                         var checkingDay = ((int)0b00000001 << ((today - i) % 7 + 7) % 7);
 
                         if ((taskHolder.WeeklyRepeatPattern & checkingDay) == checkingDay)
-                        {
-                            var dateTimeAtThatTime = DateTime.Now + TimeSpan.FromDays(-i);
-                            var boolTypeTask = await DBAccess.GetTaskOnSpecificDateAsync(taskHolder.Title, dateTimeAtThatTime.ToString("G",
-                                CultureInfo.CreateSpecificCulture("es-ES")));
-
-                            if (boolTypeTask == null)
-                                boolTypeTask = new BoolTypeUserTask(taskHolder.Title, dateTimeAtThatTime);
-
-                            taskHolder.CurrentTaskList.Add(boolTypeTask);
-
-                            boolTypeTask.OnDataChanged += UpdateCertainTask;
-                            BoolTypeTaskList.Add(boolTypeTask);
-
-                        }
+                            await BringSpecificTaskOnTaskHolder(taskHolder, DateTime.Now + TimeSpan.FromDays(-i));
                     }
                 }
-                
             }
         }
 
+        private async Task BringSpecificTaskOnTaskHolder(NormalTaskHolder taskHolder, DateTime date)
+        {
+            // dupli
+            var boolTypeTask = await DBAccess.GetTaskOnSpecificDateAsync(taskHolder.Title, date.ToString("G",
+                CultureInfo.CreateSpecificCulture("es-ES")));
+
+            if (boolTypeTask == null)
+                boolTypeTask = new BoolTypeUserTask(taskHolder.Title, date);
+
+            taskHolder.CurrentTaskList.Add(boolTypeTask);
+
+            boolTypeTask.OnDataChanged += UpdateCertainTask;
+            BoolTypeTaskList.Add(boolTypeTask);
+
+        }
 
         private void UpdateCertainTask(UserTask task)
         {
