@@ -25,6 +25,7 @@ namespace DailyQuestTimeScheduler.ViewModels
     {
 
         #region members
+
         private ObservableCollection<BoolTypeUserTask> boolTypeTaskList = new ObservableCollection<BoolTypeUserTask>();
 
         private UserTask selectedTaskHolder = null;
@@ -36,6 +37,7 @@ namespace DailyQuestTimeScheduler.ViewModels
         #endregion
 
         #region properties
+
         public bool IsReseting { get; set; } = false;
 
         public ObservableCollection<BoolTypeUserTask> BoolTypeTaskList
@@ -79,7 +81,6 @@ namespace DailyQuestTimeScheduler.ViewModels
         #endregion     
 
         #region Constructor
-        public SeriesCollection SeriesCollection { get; set; }
 
         public MainWindowViewModel()
         {
@@ -93,17 +94,7 @@ namespace DailyQuestTimeScheduler.ViewModels
                 CanExcuteResetAllTaskList, new ErrorMeesageWhenException());
             this.CreatingTaskHolderSettingControlCommand = new DelegateCommand(AssignTaskHolderCreateControl);
             this.TaskHolderList = new List<NormalTaskHolder>();
-            SeriesCollection = new SeriesCollection
-            {
-                new LineSeries
-                {
-                    Values = new ChartValues<double> { 3, 5, 7, 4 }
-                },
-                new ColumnSeries
-                {
-                    Values = new ChartValues<decimal> { 5, 6, 2, 7 }
-                }
-            };
+
         }
 
         public MainWindowViewModel(SqliteDataAccess dBAccess)
@@ -120,7 +111,6 @@ namespace DailyQuestTimeScheduler.ViewModels
         #endregion
 
         #region Action
-
 
         public async Task DeleteSeletedTaskHolderAsync()
         {
@@ -210,6 +200,7 @@ namespace DailyQuestTimeScheduler.ViewModels
         #endregion
 
         #region ForTesing
+
         /// <summary>
         /// This class is for inserthing test data to see the live chart graph working or not.
         /// </summary>
@@ -236,6 +227,7 @@ namespace DailyQuestTimeScheduler.ViewModels
                         DateTime.Now - TimeSpan.FromDays(j)) 
                         {  
                             IsTaskDone = ( rand.NextDouble() > 0.5), 
+                            Date = (DateTime.Now - TimeSpan.FromDays(j) - TimeSpan.FromHours(rand.Next(-5, 3))).ToString("G", CultureInfo.CreateSpecificCulture("es-ES")),
                             TimeOfCompletionLocal = (DateTime.Now - TimeSpan.FromDays(j) - TimeSpan.FromHours(rand.Next(-5,3))).ToString("G", CultureInfo.CreateSpecificCulture("es-ES"))
                             //Set Random data.
                         }));
@@ -249,6 +241,7 @@ namespace DailyQuestTimeScheduler.ViewModels
         #endregion
 
         #region Fundamental DBAccess Class
+
         public async Task<List<NormalTaskHolder>> GetTaskHolderListAsync()
         {
             return TaskHolderList = await DBAccess.GetTaskHolderListAsync();
