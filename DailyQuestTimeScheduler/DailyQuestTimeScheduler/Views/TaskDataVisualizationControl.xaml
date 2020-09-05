@@ -3,10 +3,39 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              xmlns:local="clr-namespace:DailyQuestTimeScheduler.Views"
+             DataContext="{Binding RelativeSource={RelativeSource Self}}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-            
+        <Border Background="{DynamicResource MaterialDesignPaper}" >
+            <lvc:CartesianChart DataTooltip="{x:Null}">
+                <lvc:CartesianChart.Series>
+                    <lvc:HeatSeries Values="{Binding WeekCompletionView, Mode=TwoWay}" DataLabels="True">
+                        <!--
+                The GradientStopCollection is optional to define a custom gradient
+                If this property is not specified, LiveCharts will set a gradient
+                -->
+                        <lvc:HeatSeries.GradientStopCollection>
+                            <GradientStop Offset="0" Color="#E32642"></GradientStop>
+
+                            <GradientStop Offset="1" Color="#6CBE4F"></GradientStop>
+                        </lvc:HeatSeries.GradientStopCollection>
+                    </lvc:HeatSeries>
+                </lvc:CartesianChart.Series>
+                <lvc:CartesianChart.AxisX >
+                    <lvc:Axis Labels="{Binding Days}" LabelsRotation="-15">
+                        <lvc:Axis.Separator>
+                            <lvc:Separator Step="1"></lvc:Separator>
+                        </lvc:Axis.Separator>
+                    </lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis Labels="{Binding Weeks}"></lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+            </lvc:CartesianChart>
+        </Border>
+
     </Grid>
 </UserControl>

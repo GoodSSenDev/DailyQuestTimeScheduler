@@ -56,7 +56,9 @@ namespace DailyQuestTimeScheduler.Views
 
         public void InitialSetUp(TaskHolder taskHolder)
         {
-            if(taskHolder is NormalTaskHolder nTaskHolder)
+            this.WeekCompletionView.Clear();
+
+            if (taskHolder is NormalTaskHolder nTaskHolder)
             {
                 var dayOfWeek = (int)DateTime.Now.DayOfWeek;
                 foreach (UserTask userTask in nTaskHolder.CurrentTaskList)
@@ -84,9 +86,5 @@ namespace DailyQuestTimeScheduler.Views
                 }
             }
         }
-
-
-
-
     }
 }

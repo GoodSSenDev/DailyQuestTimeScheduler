@@ -30,6 +30,7 @@ namespace DailyQuestTimeScheduler
         #region properties
         public string Title { get; set; }
 
+        public TaskHolder TaskHolder { get; set; }
 
         public string Date
         {
@@ -124,3 +125,4 @@ namespace DailyQuestTimeScheduler
         }
     }
 }
+
