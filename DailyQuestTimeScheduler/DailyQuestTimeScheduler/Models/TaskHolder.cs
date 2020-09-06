@@ -18,6 +18,7 @@ namespace DailyQuestTimeScheduler
     public abstract class TaskHolder 
     {
         #region members
+
         //Title cannot change once it set
         private string title = null;
 
@@ -25,6 +26,7 @@ namespace DailyQuestTimeScheduler
         #endregion
 
         #region properties
+
         public List<UserTask> CurrentTaskList { get; set; }
 
         public string Title

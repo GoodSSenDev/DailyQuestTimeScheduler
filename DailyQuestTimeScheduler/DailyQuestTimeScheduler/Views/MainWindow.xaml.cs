@@ -24,6 +24,5 @@ namespace DailyQuestTimeScheduler.Views
         {
             InitializeComponent();
         }
-
     }
 }

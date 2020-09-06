@@ -347,7 +347,7 @@ namespace DailyQuestTimeScheduler.Views
                 if (isRepeat)
                     normalTaskHolder.TaskDuration = this.TaskDuration;
                 else
-                    normalTaskHolder.TaskDuration = (this.dueDate -DateTime.Now).Days;
+                    normalTaskHolder.TaskDuration = (this.dueDate - DateTime.Now).Days;
             }
             this.taskHolder.WeeklyRepeatPattern = GetWeeklyRepeatPattern();
         }

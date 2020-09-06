@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:DailyQuestTimeScheduler"
         xmlns:vm="clr-namespace:DailyQuestTimeScheduler.ViewModels"
         xmlns:v ="clr-namespace:DailyQuestTimeScheduler.Views"
+        xmlns:lvc ="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
@@ -26,38 +27,69 @@
             <RowDefinition Height="0.85*"></RowDefinition>
         </Grid.RowDefinitions>
         <!-- Nav Bar-->
-        <materialDesign:ColorZone Grid.Column ="0"  Grid.Row ="0"  Grid.ColumnSpan="3" Mode="PrimaryDark"  Padding="16" Height="65">
-            <StackPanel Orientation="Horizontal">
-                <ToggleButton Style="{DynamicResource MaterialDesignHamburgerToggleButton}" />
-                <TextBlock
-                  VerticalAlignment="Center"
-                  Margin="16 0 0 0">
-                Naviagation Bar
-                </TextBlock>
-            </StackPanel>
-        </materialDesign:ColorZone>
+        <materialDesign:ColorZone Grid.Column ="0"  
+                                  Grid.Row ="0" 
+                                  Grid.ColumnSpan="3" 
+                                  Mode="PrimaryDark" 
+                                  Height="70"/>
 
         <v:TaskListControl Grid.Column ="0"  Grid.Row ="2">
             <!--Bool Type Task List BOX -->
 
 
         </v:TaskListControl>
-
-        <Button x:Name="ResetAll"
-                Content="ResetAll"
+        <StackPanel x:Name="ButtonPannels" 
+                    Orientation="Horizontal"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Grid.ColumnSpan="3" 
+                    Margin="0,0,0,0"
+                    >
+            <Button x:Name="ResetAll"
+                Content="Reset"
                 HorizontalAlignment="Left"
-                Height="86"
-                Margin="5,2,0,0"
-                VerticalAlignment="Top"
-                Width="90"
-                Command="{Binding ResetAllTaskListAsyncCommand}" Grid.Column="1" Grid.Row="1"/>
-        <Button x:Name="button2"
+                VerticalAlignment="Center"
+                Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"
+                Width="70"
+                Margin="3,3,1.5,3"
+                Command="{Binding ResetAllTaskListAsyncCommand}"/>
+            <Button x:Name="DeleteTaskHolder"
                 Content="Delete"
-                Grid.Column="1" HorizontalAlignment="Left" Height="86" Margin="100,2,0,0" Grid.Row="1" VerticalAlignment="Top" Width="95"
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Center" 
+                Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"
+                Width="Auto" 
+                Margin="1.5,3,1.5,3" 
                 Command="{Binding DeleteSelectedTaskHolderAsyncCommand}"/>
-        <Button x:Name="CreatingTaskHolderButton" Command="{Binding CreatingTaskHolderSettingControlCommand}" Content="CreateTaskHolder" Grid.Column="1" HorizontalAlignment="Left" Margin="5,92,0,0" VerticalAlignment="Top" Grid.Row="1" Width="190" Height="50"/>
+            <Button x:Name="CreatingTaskHolder" 
+                Content="CreateTaskHolder" 
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Center" 
+                Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"
+                Width="190" 
+                Margin="1.5,3,1.5,3" 
+                Command="{Binding CreatingTaskHolderSettingControlCommand}" />
+            <Button x:Name="CreateTestingData" 
+                Content="CreateTestingData" 
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Center" 
+                Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"
+                Width="190" 
+                Margin="1.5,3,1.5,3" 
+                Command="{Binding InsertTestingDataAsyncCommand}"/>
+        </StackPanel>
+        
+        <Grid 
+            Grid.Column="1"
+            Grid.Row="1"
+            Grid.ColumnSpan ="2"
+            Grid.RowSpan ="2" >
+            <ContentControl Content="{Binding DataVisualControl}"></ContentControl>
 
-        <Grid Grid.ColumnSpan ="3"  Grid.Row="1">
+        </Grid>
+
+
+        <Grid Grid.ColumnSpan ="3" Grid.Row="1">
             <ContentControl Content="{Binding SettingContent}"></ContentControl>
 
         </Grid>

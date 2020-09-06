@@ -75,9 +75,9 @@ namespace DailyQuestTimeScheduler.Tests
         [InlineData("this is testi2ng", false, 0b00000001, 2, 323)]
         [InlineData("thi3s is testing", false, 0b01000101, 3, 213)]
         [InlineData("th4is is testing", true, 0b01010101, 4, 332)]
-        public async void UpdateTaskHolderAsync_SettingShouldChanged(string description, bool isRepeat,
+         public async void UpdateTaskHolderAsync_SettingShouldChanged(string description, bool isRepeat,
             byte weeklyRepeatPattern, int taskDuration, int timeTakeToMakeTask)
-        {
+         {
             var testTaskHolder = new NormalTaskHolder("Test", description, isRepeat, weeklyRepeatPattern,
                 taskDuration, timeTakeToMakeTask, DateTime.Now);
 
@@ -105,7 +105,7 @@ namespace DailyQuestTimeScheduler.Tests
             Assert.Equal(testTaskHolder.IsRepeat, isRepeatOfFirstRow);
             Assert.Equal(testTaskHolder.TaskDuration, taskdurationOfFirstRow);
             Assert.Equal(testTaskHolder.TimeTakeToMakeTask, timeTakeToMakeTaskOfFirstRow);
-        }
+         }
 
         /// <summary>
         /// This Test will check insertion
