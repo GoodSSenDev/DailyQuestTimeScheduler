@@ -3,9 +3,7 @@ This project is a task scheduling application like a daily check list with a dat
 
 Data visualisation based on the users' check list might show the user a pattern so they can optimises their life patterns.
 
-Desktop : WPF Core
-
-Mobile : Xamarin Forms
+Desktop : WPF Core 
 
 # Build and Test
  
