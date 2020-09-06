@@ -14,3 +14,33 @@ Mobile : Xamarin Forms
 # License 
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+
+
+# Daily Quest Time Scheduler
+
+
+![](https://media.giphy.com/media/drxbVRRzm8jCA1Wzdx/giphy.gif)
+
+
+Click will and DataVisual control will show the graphs 
+
+
+![](https://media.giphy.com/media/MdAIG1HU8KQPQEBiNs/giphy.gif)
+
+
+Create Task using Create Task Button and UI (now for testing) 
+
+
+![](https://media.giphy.com/media/VEz0Z5eJFbNqycVKM1/giphy.gif)
+
+
+Delete the Task Using Deleting Task Button 
+
+Feature Development Aim:
+    Make UI Nicer
+
+    Make different a type of task
+
+    Make ASP.NET version (SaaS) cloud  
+
+    Make more intuitive graph for analysis 
