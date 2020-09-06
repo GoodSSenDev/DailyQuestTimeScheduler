@@ -2,7 +2,9 @@
 using LiveCharts.Defaults;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,28 +21,62 @@ namespace DailyQuestTimeScheduler.Views
     /// Interaction logic for TaskDataVisualizationControl.xaml
     /// Set up the various of chart that visualise a TaskHolder Data
     /// </summary>
-    public partial class TaskDataVisualizationControl : UserControl
+    public partial class TaskDataVisualizationControl : UserControl, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public string[] Days { get; set; }
         public string[] Weeks { get; set; }
         //0 null
-        //1 didn;t finish // 2 // 3 // 4// 5 //6
-        public ChartValues<HeatPoint> WeekCompletionView { get; set; } = new ChartValues<HeatPoint>();
-
+        //1 didn;t finish  //2 3 finsh
+        public ChartValues<HeatPoint> WeekCompletionView { get; set; }
 
         #region constructor
         public TaskDataVisualizationControl()
         {
             InitializeComponent();
-            Days = new[]
+            this.WeekCompletionView = new ChartValues<HeatPoint>
             {
-                "Sunday",
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday"
+                //setting defaut value
+                new HeatPoint(0, 0, 0),
+                new HeatPoint(1, 0, 0),
+                new HeatPoint(2, 0, 0),
+                new HeatPoint(3, 0, 0),
+                new HeatPoint(4, 0, 0),
+                new HeatPoint(5, 0, 0),
+                new HeatPoint(6, 0, 0),
+
+                new HeatPoint(0, 1, 0),
+                new HeatPoint(1, 1, 0),
+                new HeatPoint(2, 1, 0),
+                new HeatPoint(3, 1, 0),
+                new HeatPoint(4, 1, 0),
+                new HeatPoint(5, 1, 0),
+                new HeatPoint(6, 1, 0),
+
+                new HeatPoint(0, 2, 0),
+                new HeatPoint(1, 2, 0),
+                new HeatPoint(2, 2, 0),
+                new HeatPoint(3, 2, 0),
+                new HeatPoint(4, 2, 0),
+                new HeatPoint(5, 2, 0),
+                new HeatPoint(6, 2, 0),
+
+                new HeatPoint(0, 3, 0),
+                new HeatPoint(1, 3, 0),
+                new HeatPoint(2, 3, 0),
+                new HeatPoint(3, 3, 0),
+                new HeatPoint(4, 3, 0),
+                new HeatPoint(5, 3, 0),
+                new HeatPoint(6, 3, 0),
+
+                new HeatPoint(0, 4, 0),
+                new HeatPoint(1, 4, 0),
+                new HeatPoint(2, 4, 0),
+                new HeatPoint(3, 4, 0),
+                new HeatPoint(4, 4, 0),
+                new HeatPoint(5, 4, 0),
+                new HeatPoint(6, 4, 0),
             };
 
             Weeks = new[]
@@ -51,12 +87,23 @@ namespace DailyQuestTimeScheduler.Views
                 "4 Weeks back",
                 "5 Weeks back"
             };
+            Days = new[]
+            {
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            };
         }
+
         #endregion
 
-        public void InitialSetUp(TaskHolder taskHolder)
+        public async Task InitialSetUp(TaskHolder taskHolder)
         {
-            this.WeekCompletionView.Clear();
+            this.ResetHeatGraph();
 
             if (taskHolder is NormalTaskHolder nTaskHolder)
             {
@@ -66,25 +113,41 @@ namespace DailyQuestTimeScheduler.Views
                     if(userTask is BoolTypeUserTask boolTask)
                     {
 
-                        var timeDifference = DateTime.Now - boolTask.DateData;
+                        var timeDifference = DateTime.Now.Date - boolTask.DateData.Date;
                         int week;
-                        //
-                        if (timeDifference.Days < dayOfWeek)
+                       
+                        if (timeDifference.Days <= dayOfWeek)
                             week = 0;
                         else
-                            week = (timeDifference.Days / 7);
+                        {
+                            week = ((timeDifference.Days - (dayOfWeek + 1)) / 7)+1;
+                        }
                         // since timeDifference value have current week
 
                         // diving time of completion by 5 
                         if (boolTask.IsTaskDone)
                             //var hourQuaterContraint = (boolTask.TimeOfCompletionLocalData.Hour / 6) + 2;
-                            WeekCompletionView.Add(new HeatPoint(week, (int)boolTask.TimeOfCompletionLocalData.DayOfWeek, 
-                                (boolTask.TimeOfCompletionLocalData.Hour / 6) + 2));
+                            WeekCompletionView[(int)boolTask.TimeOfCompletionLocalData.DayOfWeek + (week * 7)].Weight = 3;
                         else
-                            WeekCompletionView.Add(new HeatPoint(week, (int)boolTask.TimeOfCompletionLocalData.DayOfWeek, 1));
+                            WeekCompletionView[(int)boolTask.TimeOfCompletionLocalData.DayOfWeek + (week * 7)].Weight = 1;
                     }
                 }
+                this.OnPropertyChanged("WeekCompletionView");
             }
         }
+
+        protected void OnPropertyChanged(string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        private void ResetHeatGraph()
+        {
+            foreach(HeatPoint point in this.WeekCompletionView)
+            {
+                point.Weight = 0;
+            }
+        }
+
     }
 }

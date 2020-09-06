@@ -63,7 +63,7 @@ namespace DailyQuestTimeScheduler.ViewModels
                 {
                     if (dataVisualControl is TaskDataVisualizationControl visualControl)
                     {
-                        visualControl.InitialSetUp(selectedTask.TaskHolder);
+                        visualControl.InitialSetUp(selectedTask.TaskHolder).FireAndForgetSafeAsync();
                     }
                 }
 
@@ -234,7 +234,7 @@ namespace DailyQuestTimeScheduler.ViewModels
             Random rand = new Random();
             int taskDuration = 1;
             byte weeklyRepeatPattern = 0b01111111;
-            int numOfDate = 30;
+            int numOfDate = 35;
             List<Task> tasks = new List<Task>();
             DateTime numOfDayInTestingData = DateTime.Now - TimeSpan.FromDays(numOfDate);
 
@@ -252,8 +252,8 @@ namespace DailyQuestTimeScheduler.ViewModels
                         DateTime.Now - TimeSpan.FromDays(j)) 
                         {  
                             IsTaskDone = ( rand.NextDouble() > 0.5), 
-                            Date = (DateTime.Now - TimeSpan.FromDays(j) - TimeSpan.FromHours(rand.Next(-5, 3))).ToString("G", CultureInfo.CreateSpecificCulture("es-ES")),
-                            TimeOfCompletionLocal = (DateTime.Now - TimeSpan.FromDays(j) - TimeSpan.FromHours(rand.Next(-5,3))).ToString("G", CultureInfo.CreateSpecificCulture("es-ES"))
+                            Date = (DateTime.Now - TimeSpan.FromDays(j)).ToString("G", CultureInfo.CreateSpecificCulture("es-ES")),
+                            TimeOfCompletionLocal = (DateTime.Now - TimeSpan.FromDays(j)).ToString("G", CultureInfo.CreateSpecificCulture("es-ES"))
                             //Set Random data.
                         }));
                 }
@@ -288,9 +288,7 @@ namespace DailyQuestTimeScheduler.ViewModels
                 return;
 
             var today = (int)DateTime.Now.DayOfWeek;
-
-
-
+            int totalDaysInFourWeeks = 28;
             foreach (var taskHolder in TaskHolderList)
             {
                 var totalDaysAfterInitDay = (DateTime.Now - taskHolder.InitTimeData).TotalDays;
@@ -317,8 +315,8 @@ namespace DailyQuestTimeScheduler.ViewModels
                             await BringSpecificTaskOnTaskHolder(taskHolder, DateTime.Now + TimeSpan.FromDays(-i));
                     }
 
-                    var visualDate = (35 < totalDaysAfterInitDay)
-                        ? 35 : totalDaysAfterInitDay;
+                    var visualDate = ((today+ 1) + totalDaysInFourWeeks < totalDaysAfterInitDay)
+                        ? (today + 1) + totalDaysInFourWeeks : totalDaysAfterInitDay;
                     for (; i < visualDate; i++)
                     {
                         //mod of negative number i to find dayOfWeek constraint

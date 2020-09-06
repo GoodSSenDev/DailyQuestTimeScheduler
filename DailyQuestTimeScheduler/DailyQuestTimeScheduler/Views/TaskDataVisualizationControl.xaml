@@ -12,15 +12,16 @@
         <Border Background="{DynamicResource MaterialDesignPaper}" >
             <lvc:CartesianChart DataTooltip="{x:Null}">
                 <lvc:CartesianChart.Series>
-                    <lvc:HeatSeries Values="{Binding WeekCompletionView, Mode=TwoWay}" DataLabels="True">
+                    <lvc:HeatSeries Values="{Binding WeekCompletionView, Mode=TwoWay}">
                         <!--
                 The GradientStopCollection is optional to define a custom gradient
                 If this property is not specified, LiveCharts will set a gradient
                 -->
                         <lvc:HeatSeries.GradientStopCollection>
-                            <GradientStop Offset="0" Color="#E32642"></GradientStop>
-
-                            <GradientStop Offset="1" Color="#6CBE4F"></GradientStop>
+                            <GradientStop Offset="0" Color="#393939"></GradientStop>
+                            <GradientStop Offset="0.33" Color="#E32642"></GradientStop>
+                            <GradientStop Offset="0.66" Color="#6CBE4F"></GradientStop>
+                            <GradientStop Offset="1" Color="#119326"></GradientStop>
                         </lvc:HeatSeries.GradientStopCollection>
                     </lvc:HeatSeries>
                 </lvc:CartesianChart.Series>
