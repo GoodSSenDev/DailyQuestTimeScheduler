@@ -239,7 +239,7 @@ namespace DailyQuestTimeScheduler.ViewModels
             DateTime numOfDayInTestingData = DateTime.Now - TimeSpan.FromDays(numOfDate);
 
             var today = (int)DateTime.Now.DayOfWeek;
-            var taskHolder = new NormalTaskHolder("TestingData", "This is Testing", true, weeklyRepeatPattern, taskDuration, 3320, numOfDayInTestingData);
+            var taskHolder = new NormalTaskHolder("TestingData6", "This is Testing", true, weeklyRepeatPattern, taskDuration, 3320, numOfDayInTestingData);
 
             await DBAccess.CreateNewTaskHolderAsync(taskHolder);
 
@@ -248,7 +248,7 @@ namespace DailyQuestTimeScheduler.ViewModels
                 var checkingDayOfWeek = ((int)0b00000001 << ((today - j) % 7 + 7) % 7);
                 if((weeklyRepeatPattern & checkingDayOfWeek) == checkingDayOfWeek)
                 {
-                    tasks.Add(DBAccess.UpsertUserTaskAsync(new BoolTypeUserTask("TestingData",
+                    tasks.Add(DBAccess.UpsertUserTaskAsync(new BoolTypeUserTask("TestingData6",
                         DateTime.Now - TimeSpan.FromDays(j)) 
                         {  
                             IsTaskDone = ( rand.NextDouble() > 0.5), 
