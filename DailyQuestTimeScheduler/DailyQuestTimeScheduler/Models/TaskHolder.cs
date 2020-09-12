@@ -17,10 +17,7 @@ namespace DailyQuestTimeScheduler
 {
     public abstract class TaskHolder 
     {
-        #region members
-
-        //Title cannot change once it set
-        private string title = null;
+        #region members 
 
         protected DateTime initTime;
         #endregion
@@ -29,17 +26,9 @@ namespace DailyQuestTimeScheduler
 
         public List<UserTask> CurrentTaskList { get; set; }
 
-        public string Title
-        {
-            get { return title; }
-            set
-            {
-                if (title == null)
-                {
-                    title = value;
-                }
-            }
-        }
+        public string DisplayTitle { get; set; }
+
+        public string Title { get; set; }//This is title for Database
 
         public string Description { get; set; }
 

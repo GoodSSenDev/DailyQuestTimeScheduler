@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Printing;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
@@ -51,7 +52,6 @@ namespace DailyQuestTimeScheduler.ViewModels
 
         public SqliteDataAccess DBAccess { get; set; }
 
-
         public BoolTypeUserTask SelectedTask
         {
             get { return selectedTask; }
@@ -63,7 +63,7 @@ namespace DailyQuestTimeScheduler.ViewModels
                 {
                     if (dataVisualControl is TaskDataVisualizationControl visualControl)
                     {
-                        visualControl.InitialSetUp(selectedTask.TaskHolder).FireAndForgetSafeAsync();
+                        visualControl.InitialSetUp(selectedTask.ParentTaskHolder).FireAndForgetSafeAsync();
                     }
                 }
 
@@ -80,7 +80,6 @@ namespace DailyQuestTimeScheduler.ViewModels
                 OnPropertyChanged();
             }
         }
-
 
         public UserControl DataVisualControl
         {
@@ -138,12 +137,9 @@ namespace DailyQuestTimeScheduler.ViewModels
 
         public async Task DeleteSeletedTaskHolderAsync()
         {
-            await this.DBAccess.DeleteTaskHolderAsync("Testing");
-
             if (selectedTask !=null)
             {
-                await this.DBAccess.DeleteTaskHolderAsync(selectedTask.Title);
-                await this.DBAccess.DeleteTaskHolderAsync("TestingData");
+                await this.DBAccess.DeleteTaskHolderAsync(selectedTask.ParentTaskHolder.Title);
                 await this.ResetAllTaskListAsync();
             }
 
@@ -202,6 +198,10 @@ namespace DailyQuestTimeScheduler.ViewModels
         {
             try
             {
+                taskHolder.Title = taskHolder.DisplayTitle.Replace(" ", "_");
+                //check duplication and assign title for DB access to create table
+                taskHolder.Title = this.GetTitleNameForDB(taskHolder.Title);
+
                 if (taskHolder is NormalTaskHolder normalTaskHolder)
                     await AssignNewTaskHolder(normalTaskHolder);
                 await ResetAllTaskListAsync();
@@ -210,6 +210,25 @@ namespace DailyQuestTimeScheduler.ViewModels
             {
                 this.SettingContent = null;
             }
+        }
+        //for avoding duplication name of title for creating database tables witht title
+        private string GetTitleNameForDB(string title)
+        {
+            string returnTitle = title;
+            var list = this.TaskHolderList.Where(x => x.Title.StartsWith(title));
+            
+            if (list.Count() != 0)
+            {
+                for (int i = 1; ; i++)
+                {
+                    if (!list.Any(x => x.Title == title + i.ToString()))
+                    {
+                        returnTitle = title + i.ToString();
+                        break;
+                    }
+                }
+            }
+            return returnTitle;
         }
 
         public void UnsetSettingControl()
@@ -239,7 +258,7 @@ namespace DailyQuestTimeScheduler.ViewModels
             DateTime numOfDayInTestingData = DateTime.Now - TimeSpan.FromDays(numOfDate);
 
             var today = (int)DateTime.Now.DayOfWeek;
-            var taskHolder = new NormalTaskHolder("TestingData6", "This is Testing", true, weeklyRepeatPattern, taskDuration, 3320, numOfDayInTestingData);
+            var taskHolder = new NormalTaskHolder("TestingData",this.GetTitleNameForDB("TestingData"), "This is Testing", true, weeklyRepeatPattern, taskDuration, 3320, numOfDayInTestingData);
 
             await DBAccess.CreateNewTaskHolderAsync(taskHolder);
 
@@ -248,14 +267,15 @@ namespace DailyQuestTimeScheduler.ViewModels
                 var checkingDayOfWeek = ((int)0b00000001 << ((today - j) % 7 + 7) % 7);
                 if((weeklyRepeatPattern & checkingDayOfWeek) == checkingDayOfWeek)
                 {
-                    tasks.Add(DBAccess.UpsertUserTaskAsync(new BoolTypeUserTask("TestingData6",
-                        DateTime.Now - TimeSpan.FromDays(j)) 
-                        {  
-                            IsTaskDone = ( rand.NextDouble() > 0.5), 
-                            Date = (DateTime.Now - TimeSpan.FromDays(j)).ToString("G", CultureInfo.CreateSpecificCulture("es-ES")),
-                            TimeOfCompletionLocal = (DateTime.Now - TimeSpan.FromDays(j)).ToString("G", CultureInfo.CreateSpecificCulture("es-ES"))
-                            //Set Random data.
-                        }));
+                    tasks.Add(DBAccess.UpsertUserTaskAsync(new BoolTypeUserTask(taskHolder.DisplayTitle,
+                        DateTime.Now - TimeSpan.FromDays(j))
+                    {
+                        IsTaskDone = (rand.NextDouble() > 0.5),
+                        Date = (DateTime.Now - TimeSpan.FromDays(j)).ToString("G", CultureInfo.CreateSpecificCulture("es-ES")),
+                        TimeOfCompletionLocal = (DateTime.Now - TimeSpan.FromDays(j)).ToString("G", CultureInfo.CreateSpecificCulture("es-ES")),
+                        ParentTaskHolder = taskHolder
+                        //Set Random data.
+                    }));
                 }
             }
             await Task.WhenAll(tasks);
@@ -328,8 +348,11 @@ namespace DailyQuestTimeScheduler.ViewModels
                             CultureInfo.CreateSpecificCulture("es-ES")));
 
                             if (boolTypeTask == null)
-                                boolTypeTask = new BoolTypeUserTask(taskHolder.Title, DateTime.Now + TimeSpan.FromDays(-i));
+                                boolTypeTask = new BoolTypeUserTask(taskHolder.DisplayTitle, DateTime.Now + TimeSpan.FromDays(-i));
+                            boolTypeTask.DisplayTitle = taskHolder.DisplayTitle;
                             taskHolder.CurrentTaskList.Add(boolTypeTask);
+                            boolTypeTask.ParentTaskHolder = taskHolder;
+                            boolTypeTask.OnDataChanged += UpdateCertainTask;
                         }
                     }
                 }
@@ -343,10 +366,10 @@ namespace DailyQuestTimeScheduler.ViewModels
                 CultureInfo.CreateSpecificCulture("es-ES")));
 
             if (boolTypeTask == null)
-                boolTypeTask = new BoolTypeUserTask(taskHolder.Title, date);
+                boolTypeTask = new BoolTypeUserTask(taskHolder.DisplayTitle, date);
 
             taskHolder.CurrentTaskList.Add(boolTypeTask);
-            boolTypeTask.TaskHolder = taskHolder;
+            boolTypeTask.ParentTaskHolder = taskHolder;
             boolTypeTask.OnDataChanged += UpdateCertainTask;
             BoolTypeTaskList.Add(boolTypeTask);
 
@@ -383,12 +406,12 @@ namespace DailyQuestTimeScheduler.ViewModels
                         CultureInfo.CreateSpecificCulture("es-ES")));
 
                     if (boolTypeTask == null)
-                        boolTypeTask = new BoolTypeUserTask(taskHolder.Title);
+                        boolTypeTask = new BoolTypeUserTask(taskHolder.DisplayTitle);
                     else
-                        boolTypeTask.Title = taskHolder.Title;
+                        boolTypeTask.DisplayTitle = taskHolder.DisplayTitle;
 
                     taskHolder.CurrentTaskList.Add(boolTypeTask);
-                    boolTypeTask.TaskHolder = taskHolder;
+                    boolTypeTask.ParentTaskHolder = taskHolder;
                     boolTypeTask.OnDataChanged += UpdateCertainTask;
                     BoolTypeTaskList.Add(boolTypeTask);
                 }

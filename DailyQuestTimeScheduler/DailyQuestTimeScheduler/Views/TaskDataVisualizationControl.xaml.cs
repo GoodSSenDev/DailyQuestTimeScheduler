@@ -60,6 +60,7 @@ namespace DailyQuestTimeScheduler.Views
             this.WeekCompletionView = new ChartValues<HeatPoint>
             {
                 //setting defaut value
+               
                 new HeatPoint(0, 0, 0),
                 new HeatPoint(1, 0, 0),
                 new HeatPoint(2, 0, 0),
@@ -99,6 +100,8 @@ namespace DailyQuestTimeScheduler.Views
                 new HeatPoint(4, 4, 0),
                 new HeatPoint(5, 4, 0),
                 new HeatPoint(6, 4, 0),
+                new HeatPoint(-1, -1, 0),
+
             };
 
             Weeks = new[]
@@ -130,29 +133,25 @@ namespace DailyQuestTimeScheduler.Views
             if (taskHolder is NormalTaskHolder nTaskHolder)
             {
                 var dayOfWeek = (int)DateTime.Now.DayOfWeek;
-                foreach (UserTask userTask in nTaskHolder.CurrentTaskList)
+                foreach (BoolTypeUserTask userTask in nTaskHolder.CurrentTaskList)
                 {
-                    if(userTask is BoolTypeUserTask boolTask)
-                    {
-
-                        var timeDifference = DateTime.Now.Date - boolTask.DateData.Date;
-                        int week;
+                    var timeDifference = DateTime.Now.Date - userTask.DateData.Date;
+                    int week;
                        
-                        if (timeDifference.Days <= dayOfWeek)
-                            week = 0;
-                        else
-                        {
-                            week = ((timeDifference.Days - (dayOfWeek + 1)) / 7)+1;
-                        }
-                        // since timeDifference value have current week
-
-                        // diving time of completion by 5 
-                        if (boolTask.IsTaskDone)
-                            //var hourQuaterContraint = (boolTask.TimeOfCompletionLocalData.Hour / 6) + 2;
-                            WeekCompletionView[(int)boolTask.TimeOfCompletionLocalData.DayOfWeek + (week * 7)].Weight = 3;
-                        else
-                            WeekCompletionView[(int)boolTask.TimeOfCompletionLocalData.DayOfWeek + (week * 7)].Weight = 1;
+                    if (timeDifference.Days <= dayOfWeek)
+                        week = 0;
+                    else
+                    {
+                        week = ((timeDifference.Days - (dayOfWeek + 1)) / 7)+1;
                     }
+                    // since timeDifference value have current week
+
+                    // diving time of completion by 5 
+                    if (userTask.IsTaskDone)
+                        //var hourQuaterContraint = (boolTask.TimeOfCompletionLocalData.Hour / 6) + 2;
+                        WeekCompletionView[(int)userTask.TimeOfCompletionLocalData.DayOfWeek + (week * 7)].Weight = 3;
+                    else
+                        WeekCompletionView[(int)userTask.TimeOfCompletionLocalData.DayOfWeek + (week * 7)].Weight = 1;
                 }
                 int[] weeksTaskFinishCount = new int[5];
                 int i = 0;
