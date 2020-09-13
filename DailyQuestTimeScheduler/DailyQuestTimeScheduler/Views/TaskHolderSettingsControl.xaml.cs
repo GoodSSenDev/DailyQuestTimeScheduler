@@ -29,7 +29,7 @@ namespace DailyQuestTimeScheduler.Views
         private Action onCancelButtonClick;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private string title;
+        private string displayTitle;
         private string description;
         private bool isRepeat = false;
         private byte weeklyRepeatPattern;
@@ -62,12 +62,13 @@ namespace DailyQuestTimeScheduler.Views
             set { onCancelButtonClick = value; }
         }
 
-        public string Title
+
+        public string DisplayTitle
         {
-            get { return title; }
+            get { return displayTitle; }
             set
             {
-                title = value;
+                displayTitle = value;
                 OnPropertyChanged();
             }
         }
@@ -239,7 +240,7 @@ namespace DailyQuestTimeScheduler.Views
         {
             InitializeComponent();
             this.taskHolder = taskHolderRequiredSetting;
-            this.Title = taskHolderRequiredSetting.Title;
+            this.DisplayTitle = taskHolderRequiredSetting.DisplayTitle;
             this.Description = taskHolderRequiredSetting.Description;
             this.IsRepeat = taskHolderRequiredSetting.IsRepeat;
             this.WeeklyRepeatPattern = taskHolderRequiredSetting.WeeklyRepeatPattern;
@@ -319,7 +320,7 @@ namespace DailyQuestTimeScheduler.Views
         {
             SetTaskHolderValues();
 
-            OnAcceptButtonClick?.Invoke(taskHolder);
+            OnAcceptButtonClick?.Invoke(this.taskHolder);
         }
 
         /// <summary>
@@ -339,7 +340,8 @@ namespace DailyQuestTimeScheduler.Views
                 this.taskHolder.TimeTakeToMakeTask += (int)((TimeTakeToMakeTaskEnd - TimeTakeToMakeTaskStart).TotalSeconds);
             }
 
-            this.taskHolder.Title = this.title;
+            this.taskHolder.DisplayTitle = this.displayTitle;
+
             this.taskHolder.Description = this.description;
             this.taskHolder.IsRepeat = this.isRepeat;
             if (taskHolder is NormalTaskHolder normalTaskHolder)

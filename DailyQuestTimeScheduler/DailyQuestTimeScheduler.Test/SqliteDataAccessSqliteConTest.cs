@@ -18,9 +18,9 @@ namespace DailyQuestTimeScheduler.Tests
 
         public SqliteDataAccessSqliteConTest()
         {
-            databaseAccess = new SqliteDataAccessSqliteCon();
+            this.databaseAccess = new SqliteDataAccessSqliteCon();
 
-            taskHolder = new NormalTaskHolder("Test", "this is testing", true, 0b01010101, 1, 32, DateTime.Now);
+            this.taskHolder = new NormalTaskHolder("Test","Test", "this is testing", true, 0b01010101, 1, 32, DateTime.Now);
         }
 
         //Create a testing row and a testing table
@@ -78,7 +78,7 @@ namespace DailyQuestTimeScheduler.Tests
          public async void UpdateTaskHolderAsync_SettingShouldChanged(string description, bool isRepeat,
             byte weeklyRepeatPattern, int taskDuration, int timeTakeToMakeTask)
          {
-            var testTaskHolder = new NormalTaskHolder("Test", description, isRepeat, weeklyRepeatPattern,
+            var testTaskHolder = new NormalTaskHolder("Test","Test", description, isRepeat, weeklyRepeatPattern,
                 taskDuration, timeTakeToMakeTask, DateTime.Now);
 
 
@@ -118,10 +118,12 @@ namespace DailyQuestTimeScheduler.Tests
             List<BoolTypeUserTask> boolTypeUserList = new List<BoolTypeUserTask>();
 
             var userTask = new BoolTypeUserTask(taskHolder.Title);
+            userTask.ParentTaskHolder = taskHolder;
+
             if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
             {
                 await databaseAccessSqlite.InsertUserTaskAsync(userTask);
-                boolTypeUserList = await databaseAccessSqlite.GetBoolTypeUserListAsync(userTask.Title);
+                boolTypeUserList = await databaseAccessSqlite.GetBoolTypeUserListAsync(userTask.DisplayTitle);
 
             }
 
@@ -142,9 +144,11 @@ namespace DailyQuestTimeScheduler.Tests
             List<BoolTypeUserTask> boolTypeUserList = new List<BoolTypeUserTask>();
 
             var userTask = new BoolTypeUserTask(taskHolder.Title);
+            userTask.ParentTaskHolder = taskHolder;
             userTask.IsTaskDone = false;
             
             var secondUserTask = new BoolTypeUserTask(taskHolder.Title);
+            secondUserTask.ParentTaskHolder = taskHolder;
             secondUserTask.Date = userTask.Date;
             secondUserTask.IsTaskDone = true;
 
@@ -153,7 +157,7 @@ namespace DailyQuestTimeScheduler.Tests
                 await databaseAccessSqlite.InsertUserTaskAsync(userTask);
                 
                 await databaseAccessSqlite.UpdateUserTaskAsync(secondUserTask);
-                boolTypeUserList = await databaseAccessSqlite.GetBoolTypeUserListAsync(userTask.Title);
+                boolTypeUserList = await databaseAccessSqlite.GetBoolTypeUserListAsync(userTask.DisplayTitle);
                 IsTaskDoneAftereChange = boolTypeUserList[0].IsTaskDone;
             }
 
@@ -168,9 +172,11 @@ namespace DailyQuestTimeScheduler.Tests
         {
 
             var userTask = new BoolTypeUserTask(taskHolder.Title);
+            userTask.ParentTaskHolder = taskHolder;
             userTask.IsTaskDone = true;
 
             BoolTypeUserTask retrunUserTask = new BoolTypeUserTask(taskHolder.Title);
+            userTask.ParentTaskHolder = taskHolder;
 
             if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
             {
@@ -195,10 +201,12 @@ namespace DailyQuestTimeScheduler.Tests
             List<BoolTypeUserTask> boolTypeUserList = new List<BoolTypeUserTask>();
 
             var userTask = new BoolTypeUserTask(taskHolder.Title);
+            userTask.ParentTaskHolder = taskHolder;
+
             if (databaseAccess is SqliteDataAccessSqliteCon databaseAccessSqlite)
             {
                 await databaseAccessSqlite.UpsertUserTaskAsync(userTask);
-                boolTypeUserList = await databaseAccessSqlite.GetBoolTypeUserListAsync(userTask.Title);
+                boolTypeUserList = await databaseAccessSqlite.GetBoolTypeUserListAsync(userTask.DisplayTitle);
 
             }
 
@@ -219,9 +227,11 @@ namespace DailyQuestTimeScheduler.Tests
             List<BoolTypeUserTask> boolTypeUserList = new List<BoolTypeUserTask>();
 
             var userTask = new BoolTypeUserTask(taskHolder.Title);
+            userTask.ParentTaskHolder = taskHolder;
             userTask.IsTaskDone = false;
 
             var secondUserTask = new BoolTypeUserTask(taskHolder.Title);
+            secondUserTask.ParentTaskHolder = taskHolder;
             secondUserTask.Date = userTask.Date;
             secondUserTask.IsTaskDone = true;
 
@@ -230,7 +240,7 @@ namespace DailyQuestTimeScheduler.Tests
                 await databaseAccessSqlite.InsertUserTaskAsync(userTask);
 
                 await databaseAccessSqlite.UpsertUserTaskAsync(secondUserTask);
-                boolTypeUserList = await databaseAccessSqlite.GetBoolTypeUserListAsync(userTask.Title);
+                boolTypeUserList = await databaseAccessSqlite.GetBoolTypeUserListAsync(userTask.DisplayTitle);
                 IsTaskDoneAftereChange = boolTypeUserList[0].IsTaskDone;
             }
 

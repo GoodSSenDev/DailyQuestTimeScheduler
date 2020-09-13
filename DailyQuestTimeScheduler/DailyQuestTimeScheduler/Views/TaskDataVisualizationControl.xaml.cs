@@ -53,13 +53,13 @@ namespace DailyQuestTimeScheduler.Views
                     DataLabels = true
                 }
             };
-
             Labels = new[] { "5 Weeks back", "4 Weeks back", "3 Weeks back", "Last Week", "This Week" };
             Formatter = value => value + " %";
 
             this.WeekCompletionView = new ChartValues<HeatPoint>
             {
                 //setting defaut value
+               
                 new HeatPoint(0, 0, 0),
                 new HeatPoint(1, 0, 0),
                 new HeatPoint(2, 0, 0),
@@ -99,6 +99,16 @@ namespace DailyQuestTimeScheduler.Views
                 new HeatPoint(4, 4, 0),
                 new HeatPoint(5, 4, 0),
                 new HeatPoint(6, 4, 0),
+
+                new HeatPoint(0, 5, 0),
+                new HeatPoint(1, 5, 0),
+                new HeatPoint(2, 5, 0),
+                new HeatPoint(3, 5, 0),
+                new HeatPoint(4, 5, 0),
+                new HeatPoint(5, 5, 0),
+                new HeatPoint(6, 5, 0),
+
+
             };
 
             Weeks = new[]
@@ -107,7 +117,8 @@ namespace DailyQuestTimeScheduler.Views
                 "Last Week",
                 "3 Weeks back",
                 "4 Weeks back",
-                "5 Weeks back"
+                "5 Weeks back",
+                ""
             };
             Days = new[]
             {
@@ -123,80 +134,118 @@ namespace DailyQuestTimeScheduler.Views
 
         #endregion
 
-        public async Task InitialSetUp(TaskHolder taskHolder)
+        public async Task InitialSetUpAsync(TaskHolder taskHolder)
         {
             this.ResetHeatGraph();
 
+            await SetBoolHeatMapGraphAsync(taskHolder);
+
+            int[] weeksTaskFinishCount = new int[5];
+
+            this.SetCompletionVarGraph(taskHolder, weeksTaskFinishCount);
+            this.SetPersentageOfCompleteGraph(weeksTaskFinishCount);
+
+            this.OnPropertyChanged("PersentageOfComplete");
+            this.OnPropertyChanged("WeekCompletionView");
+            this.OnPropertyChanged("WeekTaskCompletionVarGraph");
+
+
+        }
+
+        #region private method
+        /// <summary>
+        /// This method only uses weeksTaskFinishCount to add up and give average
+        /// </summary>
+        /// <param name="weeksTaskFinishCount">completion rate of each week</param>
+        private void SetPersentageOfCompleteGraph(int[] weeksTaskFinishCount)
+        {
+            var addCount = 0;
+            for (int c = 1; c < 5; c++)
+            {
+                addCount = addCount + weeksTaskFinishCount[c];
+            }
+
+
+            PersentageOfComplete = (addCount == 0) ? 0 : ((double)(int)((addCount / 28d) * 100));
+        }
+
+        private void SetCompletionVarGraph(TaskHolder taskHolder, int[] weeksTaskFinishCount)
+        {
+            int i = 0;
+
+            for (int weekCount = 0; weekCount < 5; weekCount++)
+            {
+                for (int k = 0; k < 7; k++, i++)
+                {
+                    if (this.WeekCompletionView[i].Weight > 1)
+                        weeksTaskFinishCount[weekCount]++;
+                }
+            }
+            double taskPerWeek = 0;
+            for (int shiftN = 0; shiftN < 7; shiftN++)
+            {
+                if ((taskHolder.WeeklyRepeatPattern & ((int)0b00000001 << (shiftN))) > 0)
+                    taskPerWeek++;
+            }
+
+            this.WeekTaskCompletionVarGraph[0].Values[0] = (weeksTaskFinishCount[4] == 0) ? 0 : ((double)(int)((weeksTaskFinishCount[4] / taskPerWeek) * 100));
+            this.WeekTaskCompletionVarGraph[0].Values[1] = (weeksTaskFinishCount[3] == 0) ? 0 : ((double)(int)((weeksTaskFinishCount[3] / taskPerWeek) * 100));
+            this.WeekTaskCompletionVarGraph[0].Values[2] = (weeksTaskFinishCount[2] == 0) ? 0 : ((double)(int)((weeksTaskFinishCount[2] / taskPerWeek) * 100));
+            this.WeekTaskCompletionVarGraph[0].Values[3] = (weeksTaskFinishCount[1] == 0) ? 0 : ((double)(int)((weeksTaskFinishCount[1] / taskPerWeek) * 100));
+            this.WeekTaskCompletionVarGraph[0].Values[4] = (weeksTaskFinishCount[0] == 0) ? 0 : ((double)(int)((weeksTaskFinishCount[0] / taskPerWeek) * 100));
+        }
+
+        /// <summary>
+        /// Set HeatMapGrap Async
+        /// </summary>
+        /// <param name="taskHolder"></param>
+        /// <returns></returns>
+        private async Task SetBoolHeatMapGraphAsync(TaskHolder taskHolder)
+        {
             if (taskHolder is NormalTaskHolder nTaskHolder)
             {
+                var tasks = new List<Task>();
                 var dayOfWeek = (int)DateTime.Now.DayOfWeek;
-                foreach (UserTask userTask in nTaskHolder.CurrentTaskList)
+                foreach (BoolTypeUserTask userTask in nTaskHolder.CurrentTaskList)
                 {
-                    if(userTask is BoolTypeUserTask boolTask)
+                    tasks.Add(Task.Run(() =>
                     {
-
-                        var timeDifference = DateTime.Now.Date - boolTask.DateData.Date;
+                        var timeDifference = DateTime.Now.Date - userTask.DateData.Date;
                         int week;
-                       
+
                         if (timeDifference.Days <= dayOfWeek)
                             week = 0;
                         else
                         {
-                            week = ((timeDifference.Days - (dayOfWeek + 1)) / 7)+1;
+                            week = ((timeDifference.Days - (dayOfWeek + 1)) / 7) + 1;
                         }
-                        // since timeDifference value have current week
+                    // since timeDifference value have current week
 
-                        // diving time of completion by 5 
-                        if (boolTask.IsTaskDone)
-                            //var hourQuaterContraint = (boolTask.TimeOfCompletionLocalData.Hour / 6) + 2;
-                            WeekCompletionView[(int)boolTask.TimeOfCompletionLocalData.DayOfWeek + (week * 7)].Weight = 3;
+                    // diving time of completion by 5 
+                    if (userTask.IsTaskDone)
+                        //var hourQuaterContraint = (boolTask.TimeOfCompletionLocalData.Hour / 6) + 2;
+                        WeekCompletionView[(int)userTask.TimeOfCompletionLocalData.DayOfWeek + (week * 7)].Weight = 3;
                         else
-                            WeekCompletionView[(int)boolTask.TimeOfCompletionLocalData.DayOfWeek + (week * 7)].Weight = 1;
-                    }
+                            WeekCompletionView[(int)userTask.TimeOfCompletionLocalData.DayOfWeek + (week * 7)].Weight = 1;
+                    }));
                 }
-                int[] weeksTaskFinishCount = new int[5];
-                int i = 0;
-                int addCount = 0;
-                for (int weekCount = 0; weekCount < 5; weekCount++)
-                {
-                    for (int k = 0; k < 7; k++, i++)
-                    {
-                        if (this.WeekCompletionView[i].Weight > 1)
-                            weeksTaskFinishCount[weekCount]++;
-                    }
-                }
-
-                WeekTaskCompletionVarGraph[0].Values[0] = (weeksTaskFinishCount[4] == 0) ? 0 : ((double)(int)((weeksTaskFinishCount[4] / 7d) * 100));
-                WeekTaskCompletionVarGraph[0].Values[1] = (weeksTaskFinishCount[3] == 0) ? 0 : ((double)(int)((weeksTaskFinishCount[3] / 7d) * 100));
-                WeekTaskCompletionVarGraph[0].Values[2] = (weeksTaskFinishCount[2] == 0) ? 0 : ((double)(int)((weeksTaskFinishCount[2] / 7d) * 100));
-                WeekTaskCompletionVarGraph[0].Values[3] = (weeksTaskFinishCount[1] == 0) ? 0 : ((double)(int)((weeksTaskFinishCount[1] / 7d) * 100));
-                WeekTaskCompletionVarGraph[0].Values[4] = (weeksTaskFinishCount[0] == 0) ? 0 : ((double)(int)((weeksTaskFinishCount[0] / 7d) * 100));
-
-                for(int c = 1; c < 5; c++)
-                {
-                    addCount = addCount + weeksTaskFinishCount[c]; 
-                }
-                PersentageOfComplete = (addCount == 0) ? 0 : ((double)(int)((addCount / 28d) * 100));
-
-
-                this.OnPropertyChanged("PersentageOfComplete");
-                this.OnPropertyChanged("WeekCompletionView");
-                this.OnPropertyChanged("WeekTaskCompletionVarGraph");
-
+                await Task.WhenAll(tasks);
             }
-        }
-
-        protected void OnPropertyChanged(string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         private void ResetHeatGraph()
         {
-            foreach(HeatPoint point in this.WeekCompletionView)
+            foreach (HeatPoint point in this.WeekCompletionView)
             {
                 point.Weight = 0;
             }
+        }
+
+        #endregion
+
+        protected void OnPropertyChanged(string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
     }

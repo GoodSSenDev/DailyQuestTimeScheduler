@@ -17,9 +17,10 @@ namespace DailyQuestTimeScheduler
         {
         }
 
-        public NormalTaskHolder(string title, string description, bool isRepeat, byte weeklyRepeatPattern,
+        public NormalTaskHolder(string displayTitle, string title, string description, bool isRepeat, byte weeklyRepeatPattern,
             int taskDuration, int timeTakeToMakeTask, string initTime) 
         {
+            this.DisplayTitle = displayTitle;
             this.Title = title;
             this.Description = description;
             this.IsRepeat = isRepeat;
@@ -30,9 +31,10 @@ namespace DailyQuestTimeScheduler
             this.CurrentTaskList = new List<UserTask>();
         }
 
-        public NormalTaskHolder(string title, string description, bool isRepeat, byte weeklyRepeatPattern,
+        public NormalTaskHolder(string displayTitle, string title, string description, bool isRepeat, byte weeklyRepeatPattern,
             int taskDuration, int timeTakeToMakeTask, DateTime initTime)
         {
+            this.DisplayTitle = displayTitle;
             this.Title = title;
             this.Description = description;
             this.IsRepeat = isRepeat;

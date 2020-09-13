@@ -96,7 +96,7 @@
                     Height="41"
                     FontFamily="{DynamicResource MaterialDesignFont}"
                     Foreground="{DynamicResource MaterialDesignTextBoxBorder}"
-                    Text="{Binding Title}"
+                    Text="{Binding DisplayTitle}"
                     AcceptsReturn="True"
                     TextWrapping="Wrap"
                     VerticalScrollBarVisibility="Auto"

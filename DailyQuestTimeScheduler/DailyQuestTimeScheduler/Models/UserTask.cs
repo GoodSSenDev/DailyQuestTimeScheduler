@@ -28,9 +28,9 @@ namespace DailyQuestTimeScheduler
         #endregion
 
         #region properties
-        public string Title { get; set; }
+        public string DisplayTitle { get; set; }
 
-        public TaskHolder TaskHolder { get; set; }
+        public TaskHolder ParentTaskHolder { get; set; }
 
         public string Date
         {
@@ -92,19 +92,19 @@ namespace DailyQuestTimeScheduler
 
         public UserTask()
         {
-            this.Title = "NotSet";
+            this.DisplayTitle = "NotSet";
             this.date = DateTime.Now;
         }
 
-        public UserTask(string titile = "NotSet")
+        public UserTask(string displayTitle)
         {
-            this.Title = titile;
+            this.DisplayTitle = displayTitle;
             this.date = DateTime.Now;
         }
 
-        public UserTask(string titile, DateTime dateOfTask)
+        public UserTask(string displayTitle, DateTime dateOfTask)
         {
-            this.Title = titile;
+            this.DisplayTitle = displayTitle;
             this.date = dateOfTask;
         }
         

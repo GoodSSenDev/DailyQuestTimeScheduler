@@ -24,8 +24,8 @@ namespace DailyQuestTimeScheduler
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
 
-                await cnn.ExecuteAsync("INSERT INTO TaskHolder (Title, IsRepeat, WeeklyRepeatPattern," +
-                    " TaskDuration, TimeTakeToMakeTask, Description, InitTime) VALUES (@Title, @IsRepeat, @WeeklyRepeatPattern, @TaskDuration, @TimeTakeToMakeTask," +
+                await cnn.ExecuteAsync("INSERT INTO TaskHolder (DisplayTitle, Title, IsRepeat, WeeklyRepeatPattern," +
+                    " TaskDuration, TimeTakeToMakeTask, Description, InitTime) VALUES (@DisplayTitle, @Title, @IsRepeat, @WeeklyRepeatPattern, @TaskDuration, @TimeTakeToMakeTask," +
                     " @Description, @InitTime)", taskHolder);
             }
         }
@@ -74,7 +74,7 @@ namespace DailyQuestTimeScheduler
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
                 await cnn.ExecuteAsync(@"UPDATE TaskHolder 
-                    SET IsRepeat = @IsRepeat, WeeklyRepeatPattern = @WeeklyRepeatPattern, TaskDuration = @TaskDuration, 
+                    SET DisplayTitle = @DisplayTitle, IsRepeat = @IsRepeat, WeeklyRepeatPattern = @WeeklyRepeatPattern, TaskDuration = @TaskDuration, 
                         TimeTakeToMakeTask = @TimeTakeToMakeTask, Description = @Description 
                     WHERE Title = @Title;"
                     , taskHolder);
@@ -97,7 +97,7 @@ namespace DailyQuestTimeScheduler
                 //pattern matching required later
                 if (userTask is BoolTypeUserTask boolUserTask)
                 {
-                    await cnn.ExecuteAsync(@$"INSERT INTO {boolUserTask.Title} (IsTaskDone, Date," +
+                    await cnn.ExecuteAsync(@$"INSERT INTO {boolUserTask.ParentTaskHolder.Title} (IsTaskDone, Date," +
                         " TimeOfCompletionUTC, TimeOfCompletionLocal) VALUES (" +
                         "@IsTaskDone, @Date, @TimeOfCompletionUTC, @TimeOfCompletionLocal)", userTask);
                 }
@@ -110,7 +110,7 @@ namespace DailyQuestTimeScheduler
             {
                 if (userTask is BoolTypeUserTask boolUserTask)
                 {
-                    await cnn.ExecuteAsync(@$"UPDATE {boolUserTask.Title}
+                    await cnn.ExecuteAsync(@$"UPDATE {boolUserTask.ParentTaskHolder.Title}
                     SET IsTaskDone = @IsTaskDone, TimeOfCompletionUTC = @TimeOfCompletionUTC, 
                         TimeOfCompletionLocal = @TimeOfCompletionLocal
                     WHERE Date = @Date;" 
@@ -125,7 +125,7 @@ namespace DailyQuestTimeScheduler
             {
                 if (userTask is BoolTypeUserTask boolUserTask)
                 {
-                    await cnn.ExecuteAsync(@$"INSERT INTO {boolUserTask.Title} (IsTaskDone, Date," +
+                    await cnn.ExecuteAsync(@$"INSERT INTO {boolUserTask.ParentTaskHolder.Title} (IsTaskDone, Date," +
                         " TimeOfCompletionUTC, TimeOfCompletionLocal) VALUES (" +
                         "@IsTaskDone, @Date, @TimeOfCompletionUTC, @TimeOfCompletionLocal)" +
                         "ON CONFLICT(Date) DO UPDATE SET " +
