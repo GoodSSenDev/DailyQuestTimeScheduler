@@ -63,7 +63,7 @@ namespace DailyQuestTimeScheduler.ViewModels
                 {
                     if (dataVisualControl is TaskDataVisualizationControl visualControl)
                     {
-                        visualControl.InitialSetUp(selectedTask.ParentTaskHolder).FireAndForgetSafeAsync();
+                        visualControl.InitialSetUpAsync(selectedTask.ParentTaskHolder).FireAndForgetSafeAsync();
                     }
                 }
 
@@ -265,7 +265,7 @@ namespace DailyQuestTimeScheduler.ViewModels
             for(int j = 0; j < numOfDate ; j++)
             {
                 var checkingDayOfWeek = ((int)0b00000001 << ((today - j) % 7 + 7) % 7);
-                if((weeklyRepeatPattern & checkingDayOfWeek) == checkingDayOfWeek)
+                if((weeklyRepeatPattern & checkingDayOfWeek) > 0)
                 {
                     tasks.Add(DBAccess.UpsertUserTaskAsync(new BoolTypeUserTask(taskHolder.DisplayTitle,
                         DateTime.Now - TimeSpan.FromDays(j))
@@ -331,7 +331,7 @@ namespace DailyQuestTimeScheduler.ViewModels
                         //mod of negative number i to find dayOfWeek constraint
                         var checkingDay = ((int)0b00000001 << ((today - i) % 7 + 7) % 7);
 
-                        if ((taskHolder.WeeklyRepeatPattern & checkingDay) == checkingDay)
+                        if ((taskHolder.WeeklyRepeatPattern & checkingDay) > 0)
                             await BringSpecificTaskOnTaskHolder(taskHolder, DateTime.Now + TimeSpan.FromDays(-i));
                     }
 
@@ -342,7 +342,7 @@ namespace DailyQuestTimeScheduler.ViewModels
                         //mod of negative number i to find dayOfWeek constraint
                         var checkingDay = ((int)0b00000001 << ((today - i) % 7 + 7) % 7);
                         
-                        if ((taskHolder.WeeklyRepeatPattern & checkingDay) == checkingDay)
+                        if ((taskHolder.WeeklyRepeatPattern & checkingDay) > 0)
                         {
                             var boolTypeTask = await DBAccess.GetTaskOnSpecificDateAsync(taskHolder.Title, (DateTime.Now + TimeSpan.FromDays(-i)).ToString("G",
                             CultureInfo.CreateSpecificCulture("es-ES")));
@@ -400,7 +400,7 @@ namespace DailyQuestTimeScheduler.ViewModels
             {
                 var checkingDay = (0b00000001 << (today));
 
-                if ((taskHolder.WeeklyRepeatPattern & checkingDay) == checkingDay)
+                if ((taskHolder.WeeklyRepeatPattern & checkingDay) > 0)
                 {
                     var boolTypeTask = await DBAccess.GetTaskOnSpecificDateAsync(taskHolder.Title, DateTime.Now.ToString("G",
                         CultureInfo.CreateSpecificCulture("es-ES")));
